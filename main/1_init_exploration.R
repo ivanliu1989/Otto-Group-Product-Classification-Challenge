@@ -10,14 +10,13 @@ require(data.table);require(caret)
 # save(train,test,sampleSubmission, file='data/raw_data.RData')
 load(file='data/raw_data.RData')
 
-train <- as.data.frame(train)
-test <- as.data.frame(test)
 levels(as.factor(train$target))
 dummies <- dummyVars(~target, data = train)
-train$target <- predict(dummies, newdata = train)
-head(train)
-
+target <- predict(dummies, newdata = train)
+train$target <- NULL
+train <- cbind(train, target)
+head(train);colnames(train)
 
 fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 2, classProbs = TRUE,
                         summaryFunction = twoClassSummary, adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
-fit <- train(target ~ ., data = train, method = "rf",metric = 'ROC',trControl = fitControl,tuneLength = 8)
+fit <- train(x = train[,c(2:94)], y = as.factor(train[,95]), method = "rf",metric = 'ROC',trControl = fitControl,tuneLength = 8) #95:103

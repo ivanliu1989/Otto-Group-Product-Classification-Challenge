@@ -11,10 +11,12 @@ require(data.table);require(caret)
 load(file='data/raw_data.RData')
 
 train <- as.data.frame(train)
+test <- as.data.frame(test)
 levels(as.factor(train$target))
 dummies <- dummyVars(~target, data = train)
 train$target <- predict(dummies, newdata = train)
 head(train)
+
 
 fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 2, classProbs = TRUE,
                         summaryFunction = twoClassSummary, adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))

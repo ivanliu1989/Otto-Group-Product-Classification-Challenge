@@ -8,7 +8,7 @@ require(data.table);require(caret)
 # test <- as.data.frame(fread(unzip('data/test.csv.zip'),stringsAsFactors = F))
 # sampleSubmission <- fread('data/sampleSubmission.csv',stringsAsFactors = F)
 # save(train,test, file='data/raw_data_multi.RData')
-load(file='data/raw_data_multi.RData')
+load(file='data/raw_data.RData')
 
 # levels(as.factor(train$target))
 # dummies <- dummyVars(~target, data = train)
@@ -18,10 +18,17 @@ load(file='data/raw_data_multi.RData')
 head(train);colnames(train)
 
 fitControl <- trainControl(method = "none", number = 10, repeats = 2, classProbs = TRUE,
-                           summaryFunction = twoClassSummary, adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
-gbmGrid <-  expand.grid(mtry=17)
-fit <- train(x = train[,c(2:94)], y = as.factor(train[,95]), method = "rf",metric = 'ROC',trControl = fitControl,tuneLength = 8,tuneGrid = gbmGrid) #95:103
+                           adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
+gbmGrid <-  expand.grid(shrinkage=0.1, interaction.depth=1, n.trees=150) 
+fit <- train(x = train[,c(2:94)], y = as.factor(train[,95]), method = "gbm",metric = 'ROC',trControl = fitControl,tuneLength = 8,tuneGrid = gbmGrid) #95:103
 
-library('e1071')
-model <- svm(as.factor(target)~., train)
-res <- predict(model, newdata=train,type = "prob")
+res <- predict(fit, newdata=test,type = "prob")
+submission <- cbind(id=test$id, res)
+write.csv(submission,file='../first_try_gbm.csv',row.names=F)
+
+# library('e1071')
+# model <- svm(as.factor(target)~., train)
+# res <- predict(model, newdata=test,type = "prob")
+# confusionMatrix(res,train$target)
+# head(res)
+

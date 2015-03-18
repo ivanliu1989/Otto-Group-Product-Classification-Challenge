@@ -31,7 +31,9 @@ val <- predict(fit, newdata=test_df,type = "prob")
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
 target_df <- target[-trainIndex,]
-logloss(val,target_df)
+# confusionMatrix(val,target_df)
+table(apply(val,1,sum))
+LogLoss(target_df,val)
 
 res <- predict(fit, newdata=test,type = "prob")
 submission <- cbind(id=test$id, res)

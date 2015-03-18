@@ -13,19 +13,27 @@ table(train$target)
 library(doMC)
 registerDoMC(cores = 2)
 
-fitControl <- trainControl(method = "none", number = 10, repeats = 3, classProbs = TRUE,
-                           adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
-gbmGrid <-  expand.grid(n.trees = 400, interaction.depth = 8, shrinkage = 0.1) 
-fit <- train(x = train[,c(2:94)], y = as.factor(train[,95]), method ="gbm", metric ='Kappa', 
-             trControl = fitControl,tuneLength = 8,tuneGrid = gbmGrid) #Accuracy Kappa
+trainIndex <- createDataPartition(train[,95], p = .7,list = FALSE)
+train_df <- train[trainIndex,]
+test_df  <- train[-trainIndex,]
+
+# fitControl <- trainControl(method = "none", number = 10, repeats = 3, classProbs = TRUE,
+#                            adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
+fitControl <- trainControl(method = "none", number = 10, repeats = 5, classProbs = T, verbose = T)
+gbmGrid <-  expand.grid(n.trees = 150, interaction.depth = 3, shrinkage = 0.1) 
+fit <- train(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), method ="gbm", metric ='Kappa', 
+             trControl = fitControl,tuneGrid = gbmGrid) #Accuracy Kappa tuneLength = 8,
 
 trellis.par.set(caretTheme())
 plot(fit, metric = "Kappa")
 
-res <- predict(fit, newdata=test,type = "prob")
+val <- predict(fit, newdata=test_df,type = "prob")
 source('main/2_logloss_func.R')
-logloss(res)
+load(file='data/target.RData')
+target_df <- target[-trainIndex,]
+logloss(val,target_df)
 
+res <- predict(fit, newdata=test,type = "prob")
 submission <- cbind(id=test$id, res)
 write.csv(submission,file='../first_try_gbm.csv',row.names=F)
 

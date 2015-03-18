@@ -13,6 +13,7 @@ load(file='data/raw_data.RData')
 levels(as.factor(train$target))
 dummies <- dummyVars(~target, data = train)
 target <- predict(dummies, newdata = train)
+colnames(target) <- colnames(res)
 save(target, file='data/target.RData')
 train$target <- NULL
 train <- cbind(train, target)

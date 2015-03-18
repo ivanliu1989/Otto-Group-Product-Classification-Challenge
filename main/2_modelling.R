@@ -4,7 +4,7 @@ setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Produc
 rm(list=ls());gc()
 require(caret)
 
-load(file='data/raw_data.RData')
+load(file='data/raw_data_multi.RData')
 table(train$target)
 
 ################
@@ -13,14 +13,14 @@ table(train$target)
 library(doMC)
 registerDoMC(cores = 2)
 
-fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 3, classProbs = TRUE,
+fitControl <- trainControl(method = "none", number = 10, repeats = 3, classProbs = TRUE,
                            adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
-gbmGrid <-  expand.grid(shrinkage=0.1, interaction.depth=1, n.trees=150) 
-fit <- train(x = train[,c(2:94)], y = as.factor(train[,95]), method ="gbm", metric ='Accuracy', 
-             trControl = fitControl,tuneLength = 8)#,tuneGrid = gbmGrid) #Accuracy Kappa
+gbmGrid <-  expand.grid(n.trees = 400, interaction.depth = 8, shrinkage = 0.1) 
+fit <- train(x = train[,c(2:94)], y = as.factor(train[,95]), method ="gbm", metric ='Kappa', 
+             trControl = fitControl,tuneLength = 8,tuneGrid = gbmGrid) #Accuracy Kappa
 
 trellis.par.set(caretTheme())
-plot(fit, metric = "Accuracy")
+plot(fit, metric = "Kappa")
 
 res <- predict(fit, newdata=test,type = "prob")
 source('main/2_logloss_func.R')
@@ -29,3 +29,7 @@ logloss(res)
 submission <- cbind(id=test$id, res)
 write.csv(submission,file='../first_try_gbm.csv',row.names=F)
 
+######################
+### Tuning Results ###
+######################
+# 1. gbm: n.trees = 400, interaction.depth = 8 and shrinkage = 0.1 (>8, 400)

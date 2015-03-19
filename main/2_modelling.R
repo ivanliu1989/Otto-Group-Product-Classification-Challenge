@@ -42,3 +42,5 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 ### Tuning Results ###
 ######################
 # 1. gbm: n.trees = 400, interaction.depth = 8 and shrinkage = 0.1 (>8, 400)
+
+

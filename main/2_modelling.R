@@ -15,21 +15,21 @@ library(doMC)
 registerDoMC(cores = 2)
 
 dim(train)
-trainIndex <- createDataPartition(train[,84], p = .7,list = FALSE)
+trainIndex <- createDataPartition(train[,95], p = .7,list = FALSE)
 train_df <- train[trainIndex,]
 test_df  <- train[-trainIndex,]
 train_df <-train
 
-fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 3, classProbs = TRUE,
-                           adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
-# fitControl <- trainControl(method = "none", number = 10, repeats = 5, classProbs = T, verbose = T)
-# gbmGrid <-  expand.grid(mtry=17)  #n.trees = 50, interaction.depth = 1, shrinkage = 0.1
-fit <- train(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), method ="avNNet", metric ='Kappa', 
-             trControl = fitControl,do.trace=100, importance = TRUE,tuneLength = 10, repeats = 15,preProc = c("center","scale","pca")) #tuneGrid = gbmGrid,Accuracy Kappa,tuneLength = 8, repeats = 15,preProc = c("center","scale","pca")
+# fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 3, classProbs = TRUE,
+#                            adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
+fitControl <- trainControl(method = "repeatedcv", number = 10, repeats = 5, classProbs = T, verbose = T)
+gbmGrid <-  expand.grid(mtry=c(1,3,6,12,24,48))  #n.trees = 50, interaction.depth = 1, shrinkage = 0.1
+fit <- train(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), method ="rf", metric ='Kappa', 
+             trControl = fitControl,do.trace=100, importance = TRUE,tuneGrid = gbmGrid) #tuneLength = 10, repeats = 15,preProc = c("center","scale","pca"),Accuracy Kappa
 
 # trellis.par.set(caretTheme())
 # plot(fit, metric = "Kappa")
-val <- predict(fit, newdata=train,type = "prob")
+val <- predict(fit, newdata=test_df,type = "prob")
 target_df <- target[-trainIndex,]
 # confusionMatrix(val,target_df)
 # table(apply(val,1,sum))
@@ -43,7 +43,7 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 ### Tuning Results ###
 ######################
 # 1. gbm: n.trees = 400, interaction.depth = 8 and shrinkage = 0.1 (>8, 400)
-# 2. rf: mtry=17 (0.5618718 | 84 features) (0.5774515 | 94 features)
+# 2. rf: mtry=17 (0.5618718 | 84 features) (0.5774515 | 94 features) | mtry=47
 
 train[,83:91] <- val
 test[,95:103] <- res

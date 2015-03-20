@@ -43,7 +43,7 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 ### Tuning Results ###
 ######################
 # 1. gbm: n.trees = 400, interaction.depth = 8 and shrinkage = 0.1 (>8, 400)
-# 2. rf: mtry=17 (0.5618718 | 84 features) (0.5774515 | 94 features) | mtry=47
+# 2. rf: mtry=17 (0.5618718 | 84 features) (0.5774515 | 94 features) | mtry=47 (0.587)
 
 train[,83:91] <- val
 test[,95:103] <- res

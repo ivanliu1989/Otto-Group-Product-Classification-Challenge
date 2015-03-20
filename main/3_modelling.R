@@ -20,12 +20,12 @@ train_df <- train[trainIndex,]
 test_df  <- train[-trainIndex,]
 train_df <-train
 
-# fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 3, classProbs = TRUE,
-#                            adaptive = list(min = 10,alpha = 0.05,method = 'BT',complete = TRUE))
-fitControl <- trainControl(method = "repeatedcv", number = 10, repeats = 5, classProbs = T, verbose = T)
-gbmGrid <-  expand.grid(mtry=c(1,3,6,12,24,48))  #n.trees = 50, interaction.depth = 1, shrinkage = 0.1
+fitControl <- trainControl(method = "adaptive_cv", number = 10, repeats = 5, classProbs = TRUE,
+                           adaptive = list(min = 12,alpha = 0.05,method = 'BT',complete = TRUE))
+# fitControl <- trainControl(method = "repeatedcv", number = 10, repeats = 5, classProbs = T, verbose = T)
+# gbmGrid <-  expand.grid(mtry=c(1,3,6,12,24,48))  #n.trees = 50, interaction.depth = 1, shrinkage = 0.1
 fit <- train(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), method ="rf", metric ='Kappa', 
-             trControl = fitControl,do.trace=100, importance = TRUE,tuneGrid = gbmGrid) #tuneLength = 10, repeats = 15,preProc = c("center","scale","pca"),Accuracy Kappa
+             trControl = fitControl,do.trace=100, importance = F,tuneLength = 12) #tuneLength = 10, repeats = 15,preProc = c("center","scale","pca"),Accuracy Kappa ,tuneGrid = gbmGrid
 
 # trellis.par.set(caretTheme())
 # plot(fit, metric = "Kappa")

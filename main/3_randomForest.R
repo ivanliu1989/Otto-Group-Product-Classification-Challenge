@@ -8,12 +8,13 @@ load(file='data/target.RData')
 load(file='data/raw_data_multi.RData')
 table(train$target)
 
-dim(train);set.seed(17)
+dim(train);set.seed(888)
 trainIndex <- createDataPartition(train[,95], p = .7,list = FALSE)
 train_df <- train[trainIndex,]
 test_df  <- train[-trainIndex,]
+# train_df <- train
 
-fit <- randomForest(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), data=train_df, importance=F, ntree=250)
+fit <- randomForest(as.factor(target) ~ ., data=train_df[,-1], importance=F, ntree=1000)
 val <- predict(fit, newdata=test_df,type = "prob")
 target_df <- target[-trainIndex,]
 LogLoss(target_df,val)
@@ -23,6 +24,14 @@ varImpPlot(fit)
 varUsed(fit)
 
 ### test ###
+options(scipen=200)
 res <- predict(fit, newdata=test,type = "prob")
-submission <- cbind(id=test$id, res)
+eps=10^-15
+res[res < eps] <- eps;
+res[res > 1 - eps] <- 1 - eps;
+res[which(res[,2]==1),]
+submission <- data.table(cbind(id=test$id, res))
 write.csv(submission,file='../first_try_rf.csv',row.names=F)
+
+# 0.5963169 : ntree=250, mtry=10
+# 0.623675451306547: ntree=100, mtry=10 | 

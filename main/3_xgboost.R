@@ -23,6 +23,8 @@ x = as.matrix(x)
 x = matrix(as.numeric(x),nrow(x),ncol(x))
 trind = 1:length(y)
 teind = (nrow(train)+1):nrow(x)
+dtrain <- x[trind,]
+dtest <- x[teind,]
 
 # Set necessary parameter
 param <- list("objective" = "multi:softprob",
@@ -32,20 +34,28 @@ param <- list("objective" = "multi:softprob",
 
 # Run Cross Valication
 cv.nround = 50
-bst.cv = xgb.cv(param=param, data = x[trind,], label = y, 
+bst.cv = xgb.cv(param=param, data = dtrain, label = y, 
                 nfold = 10, nrounds=cv.nround)
 
 # Train the model
-bst = xgboost(param=param, data = x[trind,], label = y, max.depth = 6, eta = 0.3, nround = 250, gamma = 0.5, subsample=1)
+set.seed(888)
+bst = xgboost(param=param, data = dtrain, label = y, max.depth = 6, eta = 0.1, nround = 500, gamma = 0.1, subsample=0.8)
 
 # Make prediction
-pred = predict(bst,x[teind,])
+pred = predict(bst,dtest)
 pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
+pred3 <- pred
+# pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5)/5
 
 # Validation
 target_df <- target[-trainIndex,]
-LogLoss(target_df,pred)
+LogLoss(target_df,pred3)
+
+ptrain <- predict(bst, dtrain, outputmargin=TRUE)
+ptest  <- predict(bst, dtest, outputmargin=TRUE)
+setinfo(dtrain, "base_margin", ptrain)
+setinfo(dtest, "base_margin", ptest)
 
 # Output submission
 pred = format(pred, digits=2,scientific=F) # shrink the size of submission
@@ -64,6 +74,8 @@ write.csv(pred,file='submission.csv', quote=FALSE,row.names=FALSE)
 # 0.4985567 max.depth=7, eta=0.3, nround=150, gamma=0.5, subsample=1
 # 0.5122933 max.depth=4, eta=0.3, nround=150, gamma=0.5, subsample=1
 # 0.5038205 max.depth=5, eta=0.3, nround=150, gamma=0.5, subsample=1
-
-
-
+# 0.4983714 max.depth = 4, eta = 0.1, nround = 1000, gamma = 0.1, subsample=1
+# 0.4904834 max.depth = 6, eta = 0.1, nround = 500, gamma = 0.1, subsample=1
+# 0.4843841 max.depth = 6, eta = 0.1, nround = 500, gamma = 0.1, subsample=0.7
+# 0.4814787 max.depth = 6, eta = 0.1, nround = 500, gamma = 0.1, subsample=0.8
+# 0.4762001 pred3

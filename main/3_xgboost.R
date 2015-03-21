@@ -36,7 +36,7 @@ bst.cv = xgb.cv(param=param, data = x[trind,], label = y,
                 nfold = 10, nrounds=cv.nround)
 
 # Train the model
-bst = xgboost(param=param, data = x[trind,], label = y, max.depth = 6, eta = 0.1, nround = 150, gamma = 0.3, subsample=1)
+bst = xgboost(param=param, data = x[trind,], label = y, max.depth = 6, eta = 0.3, nround = 250, gamma = 0.5, subsample=1)
 
 # Make prediction
 pred = predict(bst,x[teind,])
@@ -53,7 +53,17 @@ pred = data.frame(1:nrow(pred),pred)
 names(pred) = c('id', paste0('Class_',1:9))
 write.csv(pred,file='submission.csv', quote=FALSE,row.names=FALSE)
 
-# 0.53
-# 0.5252165
-# 0.498124 nround=150
+
 # 0.4968521 max.depth=6, eta=0.3, nround=150, gamma=0.3, subsample=1
+# 0.5220532 max.depth=6, eta=0.1, nround=150, gamma=0.3, subsample=1
+# 0.498769 max.depth=6, eta=0.2, nround=150, gamma=0.3, subsample=1
+# 0.5093105 max.depth=6, eta=0.4, nround=150, gamma=0.3, subsample=1
+# 0.4993252 max.depth=6, eta=0.3, nround=150, gamma=0.1, subsample=1
+# 0.4963108 max.depth=6, eta=0.3, nround=150, gamma=0.5, subsample=1
+# 0.49975 max.depth=6, eta=0.3, nround=150, gamma=1, subsample=1
+# 0.4985567 max.depth=7, eta=0.3, nround=150, gamma=0.5, subsample=1
+# 0.5122933 max.depth=4, eta=0.3, nround=150, gamma=0.5, subsample=1
+# 0.5038205 max.depth=5, eta=0.3, nround=150, gamma=0.5, subsample=1
+
+
+

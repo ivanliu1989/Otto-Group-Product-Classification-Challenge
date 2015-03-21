@@ -38,24 +38,24 @@ bst.cv = xgb.cv(param=param, data = dtrain, label = y,
                 nfold = 10, nrounds=cv.nround)
 
 # Train the model
-set.seed(88)
+set.seed(18)
 bst = xgboost(param=param, data = dtrain, label = y, max.depth = 6, eta = 0.1, nround = 500, gamma = 0.1, subsample=0.8)
 
 # Make prediction
 pred = predict(bst,dtest)
 pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
-pred1 <- pred
-# pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5)/5
-# for (i in 1:9){
-#     for (j in 1:nrow(pred1)){
-#         pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i])
-#     }
-# }
+pred2 <- pred
+pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5)/5
+for (i in 1:9){
+    for (j in 1:nrow(pred1)){
+        pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i])
+    }
+}
 
 # Validation
 target_df <- target[-trainIndex,]
-LogLoss(target_df,pred1)
+LogLoss(target_df,pred_ensemble)
 
 # ptrain <- predict(bst, dtrain, outputmargin=TRUE)
 # ptest  <- predict(bst, dtest, outputmargin=TRUE)
@@ -85,3 +85,4 @@ write.csv(pred_ensemble,file='submission_max.csv', quote=FALSE,row.names=FALSE)
 # 0.4814787 max.depth = 6, eta = 0.1, nround = 500, gamma = 0.1, subsample=0.8
 # 0.4762001 pred3
 # 0.4751727 /5
+# 0.439 /max

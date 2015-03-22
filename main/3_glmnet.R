@@ -28,15 +28,22 @@ dtrain <- x[trind,]
 dtest <- x[teind,]
 
 # train_df <- train
+mul_val <- target[-trainIndex,]
+for (n in 1:9){
+    #n <- 1
+    fit <- glmnet(y=target[trainIndex,n], x=dtrain, family="binomial",alpha=1,standardize=F,
+                  type.logistic="Newton", nlambda=100, intercept=T, maxit=10^5,type.multinomial="ungrouped")
+    #family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
+    # ungrouped,multinomial
+    val <- predict(fit, newx=dtest,type = "response")
+    target_df <- target[-trainIndex,n]
+    logloss <- LogLoss(target_df,val[,dim(val)[2]])
+    print(paste0(logloss, '\n'))
+    mul_val[,n] <- val[,dim(val)[2]]
+}
 
-fit <- glmnet(y=target[trainIndex,3], x=dtrain, family="binomial",alpha=0.7,standardize=F,
-              type.logistic="Newton", nlambda=100, intercept=T, maxit=10^5,type.multinomial="ungrouped")
-#family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
-# ungrouped,multinomial
-val <- predict(fit, newx=dtest,type = "response")
-target_df <- target[-trainIndex,3]
-# MulLogLoss(target_df,val[,91])
-LogLoss(target_df,val[,95])
+MulLogLoss(target_df,val[,91])
+
 
 ### test ###
 options(scipen=200)

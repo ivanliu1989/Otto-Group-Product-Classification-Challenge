@@ -28,3 +28,16 @@ train[, -comboInfo$remove]
 
 ### NA ###
 sum(is.na(train))
+
+### PCA ###
+pcaFit <- preProcess(train[,c(2:94)], method = "pca")
+trainPCA <- predict(pcaFit,train[,c(2:94)])
+testPCA <- predict(pcaFit,test[,c(2:94)])
+
+trainPCA$id <- train$id
+trainPCA$target <- train$target
+testPCA$id <- test$id
+
+train <- trainPCA
+test <- testPCA
+save(train,test, file='data/raw_data_PCA.RData')

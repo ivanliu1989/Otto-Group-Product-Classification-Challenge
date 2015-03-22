@@ -12,8 +12,8 @@ train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 # train_df <- train
 
 fitControl <- trainControl(method = "none", number = 10, repeats = 5, classProbs = T, verbose = T)
-gbmGrid <-  expand.grid(size=3, decay=0.5, bag=T)
-fit <- train(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), method ="avNNet", metric ='Kappa', 
+gbmGrid <-  expand.grid(size=2, decay=0.5, bag=T)
+fit <- train(x = train_df[,c(2:94)], y = as.factor(train_df[,95]), method ="avNNet",# metric ='Kappa', 
              trControl = fitControl,do.trace=100, tuneGrid = gbmGrid, repeats = 15, 
              trace=T)#, preProc = c("center","scale",'pca'))
 
@@ -33,3 +33,5 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 
 # 1.40 size=1, decay=0.1, bag=T, no pca
 # 0.8665756 size=3, decay=0.1, bag=T, no pca
+# 0.8574749  size=3, decay=0.1, repeats= 15, bag=T, no pca
+# 0.8305999

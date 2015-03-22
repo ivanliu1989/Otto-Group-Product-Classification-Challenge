@@ -9,17 +9,17 @@ load(file='data/raw_data_multi.RData')
 # load(file='data/raw_data_PCA.RData')
 
 dim(train);set.seed(888)
-# trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
-# train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
+trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
-train = train[,-which(names(train) %in% c("id"))] #train
-test = test[,-which(names(test) %in% c("id"))] #test
+train = train_df[,-which(names(train_df) %in% c("id"))] #train
+test = test_df[,-which(names(test_df) %in% c("id"))] #test
 
 y = train[,'target']
 y = gsub('Class_','',y)
 y = as.integer(y)-1 #xgboost take features in [0,numOfClass)
 
-x = rbind(train[,-which(names(train) %in% c("target"))],test)#[,-which(names(test) %in% c("target"))])
+x = rbind(train[,-which(names(train) %in% c("target"))],test[,-which(names(test) %in% c("target"))])#[,-which(names(test) %in% c("target"))])
 x = as.matrix(x)
 x = matrix(as.numeric(x),nrow(x),ncol(x))
 trind = 1:length(y)
@@ -29,12 +29,13 @@ dtest <- x[teind,]
 
 # train_df <- train
 
-fit <- glmnet(y=y, x=dtrain, family="multinomial",alpha=0.5,standardize=T,
-              type.logistic="Newton",type.multinomial="grouped")
+fit <- glmnet(y=y, x=dtrain, family="multinomial",alpha=0.9,standardize=F,
+              type.logistic="Newton", nlambda=100, intercept=F, maxit=10^5,type.multinomial="ungrouped")
 #family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
-val <- predict(fit, newdata=dtest,type = "prob")
+# ungrouped
+val <- predict(fit, newx=dtest,type = "response")
 target_df <- target[-trainIndex,]
-LogLoss(target_df,val)
+LogLoss(target_df,val[,,100])
 
 
 ### test ###
@@ -43,3 +44,5 @@ res <- predict(fit, newdata=test,type = "prob")
 submission <- data.table(cbind(id=test$id, res))
 write.csv(submission,file='../first_try_rf.csv',row.names=F)
 
+# 0.6414592 family="multinomial",alpha=0.5,standardize=T
+# 0.6407393

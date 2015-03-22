@@ -29,10 +29,10 @@ dtest <- x[teind,]
 
 # train_df <- train
 
-fit <- glmnet(y=y, x=dtrain, family="multinomial",alpha=0.9,standardize=F,
-              type.logistic="Newton", nlambda=100, intercept=F, maxit=10^5,type.multinomial="ungrouped")
+fit <- glmnet(y=target[trainIndex,1], x=dtrain, family="binomial",alpha=0.7,standardize=F,
+              type.logistic="Newton", nlambda=100, intercept=T, maxit=10^5,type.multinomial="ungrouped")
 #family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
-# ungrouped
+# ungrouped,multinomial
 val <- predict(fit, newx=dtest,type = "response")
 target_df <- target[-trainIndex,]
 LogLoss(target_df,val[,,100])

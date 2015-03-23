@@ -2,7 +2,7 @@
 setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
 # setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
-require(caret);require(glmnet)
+require(caret)
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
 load(file='data/raw_data_multi.RData')
@@ -26,15 +26,18 @@ trind = 1:length(y)
 teind = (nrow(train)+1):nrow(x)
 dtrain <- x[trind,]
 dtest <- x[teind,]
-
 # train_df <- train
+
+library(doMC)
+registerDoMC(cores = 2)
 mul_val <- target[-trainIndex,]
 for (n in 1:9){
     #n <- 1
-    fit <- glmnet(y=target[trainIndex,n], x=dtrain, family="binomial",alpha=1,standardize=F,
-                  type.logistic="Newton", nlambda=100, intercept=T, maxit=10^5,type.multinomial="ungrouped")
-    #family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
-    # ungrouped,multinomial
+    fitControl <- trainControl(method = "none", number = 10, repeats = 5, classProbs = T, verbose = T)
+    gbmGrid <-  expand.grid(C=4)# bag=T)
+    fit <- train(y=target[trainIndex,n], x=dtrain, method ="svmLinear",# metric ='Kappa', 
+                 trControl = fitControl,do.trace=100, tuneGrid = gbmGrid,
+                 trace=T, preProc = c("center","scale",'pca'))
     val <- predict(fit, newx=dtest,type = "response")
     target_df <- target[-trainIndex,n]
     logloss <- LogLoss(target_df,val[,dim(val)[2]])
@@ -51,6 +54,4 @@ res <- predict(fit, newdata=test,type = "prob")
 submission <- data.table(cbind(id=test$id, res))
 write.csv(submission,file='../first_try_rf.csv',row.names=F)
 
-# 0.6414592 family="multinomial",alpha=0.5,standardize=T
-# 0.6407393
-# 0.7184354 single
+# 

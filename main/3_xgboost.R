@@ -1,16 +1,13 @@
-setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge')
-# setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
-# setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
+setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge');setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
 load(file='data/raw_data_multi.RData')
-# load(file='data/raw_data_PCA.RData')
 
-dim(train);set.seed(888)
-trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
-train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
+head(train);dim(train);train <- shuffle(train);head(train);dim(train);
+# trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+# train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train = train_df[,-which(names(train) %in% c("id"))] #train
 test = test_df[,-which(names(test) %in% c("id"))] #test

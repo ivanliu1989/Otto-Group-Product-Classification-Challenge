@@ -31,22 +31,22 @@ dtest <- x[teind,]
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss",
               "num_class" = 9,
-              "nthread" = 4)
-# max.depth=2,eta=1,gamma = 0.05, subsample=0.8
+              "nthread" = 6,max.depth=4,eta=0.3,
+              gamma = 0.3, subsample=0.8)
 
 # Run Cross Valication
-cv.nround = 50
+cv.nround = 1000
 bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
                 nrounds=cv.nround,prediction = TRUE)
-bst.cv$dt
-pred <- bst.cv$pred
+# bst.cv$dt
+# pred <- bst.cv$pred
 
 ### Train the model ###
 set.seed(88)
-# bst = xgboost(param=param, data = dtrain, label = y, max.depth = 8, eta = 0.05, nround = 500, gamma = 0.05, subsample=0.8)
+bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
 
 ### Make prediction ###
-pred = predict(bst.cv,dtest)#, ntreelimit=1
+pred = predict(bst,dtest)#, ntreelimit=1
 pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
 
@@ -72,7 +72,7 @@ pred = t(pred)
 
 ### Validation ###
 target_df <- target[-trainIndex,]
-LogLoss(target_df,pred)
+MulLogLoss(target_df,pred)
 
 ### Output submission ###
 pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission

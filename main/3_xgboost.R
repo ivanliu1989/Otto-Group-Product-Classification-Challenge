@@ -1,4 +1,6 @@
-setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge');setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
+setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge');
+setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');
+setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 source('main/2_logloss_func.R')

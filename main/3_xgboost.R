@@ -9,17 +9,17 @@ load(file='data/raw_data_multi.RData')
 # load(file='data/raw_data_PCA.RData')
 
 dim(train);set.seed(888)
-# trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
-# train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
+trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
-train = train[,-which(names(train) %in% c("id"))] #train
-test = test[,-which(names(test) %in% c("id"))] #test
+train = train_df[,-which(names(train) %in% c("id"))] #train
+test = test_df[,-which(names(test) %in% c("id"))] #test
 
 y = train[,'target']
 y = gsub('Class_','',y)
 y = as.integer(y)-1 #xgboost take features in [0,numOfClass)
 
-x = rbind(train[,-which(names(train) %in% c("target"))],test)#[,-which(names(test) %in% c("target"))])
+x = rbind(train[,-which(names(train) %in% c("target"))],test[,-which(names(test) %in% c("target"))])#[,-which(names(test) %in% c("target"))])
 x = as.matrix(x)
 x = matrix(as.numeric(x),nrow(x),ncol(x))
 trind = 1:length(y)
@@ -32,29 +32,32 @@ param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss",
               "num_class" = 9,
               "nthread" = 4)
+# max.depth=2,eta=1,gamma = 0.05, subsample=0.8
 
 # Run Cross Valication
-# cv.nround = 50
-# bst.cv = xgb.cv(param=param, data = dtrain, label = y, 
-#                 nfold = 10, nrounds=cv.nround)
+cv.nround = 50
+bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
+                nrounds=cv.nround,prediction = TRUE)
+bst.cv$dt
+pred <- bst.cv$pred
 
 ### Train the model ###
 set.seed(88)
-bst = xgboost(param=param, data = dtrain, label = y, max.depth = 8, eta = 0.05, nround = 500, gamma = 0.05, subsample=0.8)
+# bst = xgboost(param=param, data = dtrain, label = y, max.depth = 8, eta = 0.05, nround = 500, gamma = 0.05, subsample=0.8)
 
 ### Make prediction ###
-pred = predict(bst,dtest)
+pred = predict(bst.cv,dtest)#, ntreelimit=1
 pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
 
 ### Ensemble ###
-pred5 <- pred
-pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5)/5
-for (i in 1:9){
-    for (j in 1:nrow(pred1)){
-        pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i])
-    }
-}
+# pred5 <- pred
+# pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5)/5
+# for (i in 1:9){
+#     for (j in 1:nrow(pred1)){
+#         pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i])
+#     }
+# }
 
 ### Beta varialble ###
 # pred = predict(bst,dtest)

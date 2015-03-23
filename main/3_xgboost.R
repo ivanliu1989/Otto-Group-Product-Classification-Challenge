@@ -31,12 +31,13 @@ dtest <- x[teind,]
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
               "nthread" = 2, seed = 8,
-              "num_class" = 9, max.depth=7, eta=0.03,
-              gamma = 0.01, subsample=0.8, colsample_bytree = 0.9)
+              "num_class" = 9, max.depth=8, min_child_weight=4
+              subsample=0.9, colsample_bytree = 0.8)
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
+# eta=0.03, gamma = 0.01, 
 
 # Run Cross Valication
-cv.nround = 1000
+cv.nround = 250
 bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
                 nrounds=cv.nround,prediction = TRUE)
 # bst.cv$dt

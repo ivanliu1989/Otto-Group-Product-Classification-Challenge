@@ -22,3 +22,14 @@ LogLoss <- function(actual, predicted, eps=1e-15) {
     predicted[predicted > 1 - eps] <- 1 - eps;
     -1/length(actual)*(sum(actual*log(predicted)))
 }
+
+shuffle <- function(sf){
+    sf[,'_id'] <- sample(1:nrow(sf), nrow(sf), replace=T)
+    attach(sf)
+    sf <- sf[order(_id),]
+    detach(sf)
+    sf[,'_id'] <- NULL
+    return (sf)
+}
+    
+

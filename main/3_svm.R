@@ -32,17 +32,17 @@ library(doMC)
 registerDoMC(cores = 2)
 mul_val <- target[-trainIndex,]
 for (n in 1:9){
-    #n <- 1
+    #     n <- 1
     fitControl <- trainControl(method = "none", number = 10, repeats = 5, classProbs = T, verbose = T)
-    gbmGrid <-  expand.grid(C=4)# bag=T)
+    gbmGrid <-  expand.grid(C=1)# bag=T)
     fit <- train(y=target[trainIndex,n], x=dtrain, method ="svmLinear",# metric ='Kappa', 
                  trControl = fitControl,do.trace=100, tuneGrid = gbmGrid,
-                 trace=T, preProc = c("center","scale",'pca'))
-    val <- predict(fit, newx=dtest,type = "response")
+                 trace=T, preProc = c("center","scale"), verbose=T)#,'pca'
+    val <- predict(fit, newx=dtest,type = "prob")
     target_df <- target[-trainIndex,n]
-    logloss <- LogLoss(target_df,val[,dim(val)[2]])
+    logloss <- LogLoss(target_df,val)
     print(paste0(logloss, '\n'))
-    mul_val[,n] <- val[,dim(val)[2]]
+    mul_val[,n] <- val
 }
 target_df <- target[-trainIndex,]
 MulLogLoss(target_df,mul_val)

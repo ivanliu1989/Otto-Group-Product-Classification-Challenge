@@ -5,7 +5,7 @@ rm(list=ls());gc()
 library(h2o);require(caret)
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_multi.RData')
+load(file='data/raw_data_log.RData') # raw_data_log_scale.RData
 
 localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
 h2o.clusterInfo(localH2O)
@@ -23,7 +23,6 @@ dependent <- "target"
 #                shrinkage = 0.05, distribution= "multinomial")
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
-### Scale ###
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="Rectifier",#TanhWithDropout
                         #input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5),

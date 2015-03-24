@@ -10,7 +10,7 @@ load(file='data/raw_data_multi.RData')
 # trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 # train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
-train <- shuffle(train)
+train <- shuffle(train) #<<============#
 train = train[,-which(names(train) %in% c("id"))] #train
 test = test[,-which(names(test) %in% c("id"))] #test
 
@@ -29,7 +29,7 @@ dtest <- data.matrix(x[teind,])
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 2, set.seed = 8, eta=0.05, gamma = 0.05,
+              "nthread" = 2, set.seed = 8, eta=0.05, gamma = 0.05, #<<============#
               "num_class" = 9, max.depth=8, min_child_weight=1,
               subsample=0.8, colsample_bytree = 0.9)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
@@ -44,7 +44,7 @@ cv.nround = 668
 # pred <- bst.cv$pred
 
 ### Train the model ###
-set.seed(8)
+set.seed(8) #<<============#
 bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
 
 ### Make prediction ###
@@ -53,7 +53,8 @@ pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
 
 ### Ensemble ###
-pred1 <- pred
+pred1 <- pred #<<============#
+save(pred1, file='../xgboost_pred1.RData') #<<============#
 # pred_ensemble <- (pred1 + pred2)/2
 # for (i in 1:9){
 #     for (j in 1:nrow(pred1)){

@@ -8,8 +8,8 @@ load(file='data/target.RData')
 load(file='data/raw_data_multi.RData')
 
 head(train);dim(train);train <- shuffle(train);head(train);dim(train);
-# trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
-# train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
+trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train = train_df[,-which(names(train) %in% c("id"))] #train
 test = test_df[,-which(names(test) %in% c("id"))] #test
@@ -30,7 +30,7 @@ dtest <- x[teind,]
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
               "nthread" = 2, seed = 8,
-              "num_class" = 9, max.depth=8, min_child_weight=4
+              "num_class" = 9, max.depth=8, min_child_weight=4,
               subsample=0.9, colsample_bytree = 0.8)
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 # eta=0.03, gamma = 0.01, 

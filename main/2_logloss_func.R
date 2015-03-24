@@ -25,7 +25,7 @@ LogLoss <- function(actual, predicted, eps=1e-15) {
 
 shuffle <- function(sf){
     sf[,'id2'] <- sample(1:nrow(sf), nrow(sf), replace=T)
-    sf <- sf[order(id2),]
+    sf <- sf[order(sf$id2),]
     sf[,'id2'] <- NULL
     return (sf)
 }

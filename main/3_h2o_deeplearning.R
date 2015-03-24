@@ -23,17 +23,17 @@ dependent <- "target"
 #                shrinkage = 0.05, distribution= "multinomial")
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
-# fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
-#                         classification=T,activation="Tanh",#TanhWithDropout
-#                         #input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),
-#                         hidden=c(100,100,100),epochs=12,variable_importances=T,
-#                         override_with_best_model=T,nfolds=10,seed=8,loss='CrossEntropy',
-#                         rate=0.1,nesterov_accelerated_gradient=T,shuffle_training_data=F)
-# adaptive_rate=0.9,l1=0.4,l2=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
+fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
+                        classification=T,activation="RectifierWithDropout",#TanhWithDropout
+                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5),
+                        hidden=c(200),epochs=12,variable_importances=T,
+                        override_with_best_model=T,nfolds=10,seed=8,loss='CrossEntropy',
+                        l2=0.001,rate=0.1,nesterov_accelerated_gradient=T,shuffle_training_data=F)
+adaptive_rate=0.9,l1=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
 
-fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
-                        classification=T, ntree=500, depth=30, mtries=30,
-                        sample.rate=0.8, nbins=T, seed=8,verbose=T)
+# fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
+#                         classification=T, ntree=500, depth=30, mtries=30,
+#                         sample.rate=0.8, nbins=T, seed=8,verbose=T)
 # nodesize=10,
 
 pred <- h2o.predict(object = fit, newdata = test_df)

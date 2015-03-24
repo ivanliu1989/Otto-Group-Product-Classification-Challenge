@@ -23,3 +23,8 @@ fit <- h2o.deeplearning(y = dependent, x = independent, data = train,
                         hidden=c(10,10,10),epochs=12,variable_importances=T)
 
 pred <- h2o.predict(object = fit, newdata = test)
+
+pred_ensemble = format(as.data.frame(pred[,2:10]), digits=2,scientific=F) # shrink the size of submission
+pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
+names(pred_ensemble) = c('id', paste0('Class_',1:9))
+write.csv(pred_ensemble,file='submission_max_047.csv', quote=FALSE,row.names=FALSE)

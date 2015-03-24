@@ -15,7 +15,7 @@ test <- as.h2o(localH2O, test, key="test")
 independent <- colnames(train[,2:94])
 dependent <- "target"
 fit <- h2o.gbm(y = dependent, x = independent, data = train, 
-               n.trees = 15, interaction.depth = 5,
+               n.trees = 150, interaction.depth = 5,
                n.minobsinnode = 2, shrinkage = 0.01, distribution= "multinomial")
 
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train, 

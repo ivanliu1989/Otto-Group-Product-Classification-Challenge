@@ -5,7 +5,7 @@ rm(list=ls());gc()
 library(h2o);library(caret)
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_log_scale.RData') # raw_data_log_scale.RData
+load(file='data/raw_data_log.RData') # raw_data_log_scale.RData
 
 localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
 # h2o.clusterInfo(localH2O)
@@ -26,12 +26,12 @@ dependent <- "target"
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
-                        classification=T,activation="RectifierWithDropout",#TanhWithDropout
-                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5),
-                        hidden=c(100,100),epochs=16,variable_importances=F,
+                        classification=T,activation="Rectifier",#TanhWithDropout
+                        #input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),
+                        hidden=c(150),epochs=16,variable_importances=F,
                         override_with_best_model=F,nfolds=10,seed=8,loss='CrossEntropy',
-                        l2=0.001,rate=0.3,nesterov_accelerated_gradient=F,shuffle_training_data=F)
-# adaptive_rate=0.9,l1=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
+                        epsilon=0.1,rate=0.1,nesterov_accelerated_gradient=F,shuffle_training_data=T)
+# adaptive_rate=0.9,l1=0.4,rate_decay=0.1,,max_w2=4,l2=0.001
 
 # fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
 #                         classification=T, ntree=500, depth=30, mtries=30,

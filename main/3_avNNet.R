@@ -6,7 +6,7 @@ require(caret);require(nnet)
 source('main/2_logloss_func.R')
 load(file='data/target.RData');load(file='data/raw_data_multi.RData')
 
-dim(train);set.seed(888)
+dim(train);set.seed(888);train <- shuffle(train)
 trainIndex <- createDataPartition(train[,95], p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 # train_df <- train

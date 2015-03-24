@@ -5,9 +5,9 @@ rm(list=ls());gc()
 require(caret);require(glmnet)
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_log_scale.RData') # raw_data_log_scale.RData
+load(file='data/raw_data_log.RData') # raw_data_log_scale.RData
 
-dim(train);set.seed(888)
+dim(train);set.seed(888);train <- shuffle(train)
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
@@ -27,21 +27,21 @@ dtrain <- x[trind,]
 dtest <- x[teind,]
 
 # train_df <- train
-mul_val <- target[-trainIndex,]
-for (n in 1:9){
+# mul_val <- target[-trainIndex,]
+#for (n in 1:9){
     #n <- 1
-    fit <- glmnet(y=target[trainIndex,n], x=dtrain, family="binomial",alpha=1,standardize=F,
+    fit <- glmnet(y=target[trainIndex,], x=dtrain, family="multinomial",alpha=1,standardize=F,
                   type.logistic="Newton", nlambda=100, intercept=T, maxit=10^5,type.multinomial="ungrouped")
     #family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
     # ungrouped,multinomial
     val <- predict(fit, newx=dtest,type = "response")
-    target_df <- target[-trainIndex,n]
-    logloss <- LogLoss(target_df,val[,dim(val)[2]])
-    print(paste0(logloss, '\n'))
-    mul_val[,n] <- val[,dim(val)[2]]
-}
+#     target_df <- target[-trainIndex,]
+#     logloss <- LogLoss(target_df,val[,dim(val)[2]])
+#     print(paste0(logloss, '\n'))
+#     mul_val[,n] <- val[,dim(val)[2]]
+#}
 target_df <- target[-trainIndex,]
-MulLogLoss(target_df,mul_val)
+MulLogLoss(target_df,val[,,dim(val)[3]])
 
 
 ### test ###
@@ -53,3 +53,4 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 # 0.6414592 family="multinomial",alpha=0.5,standardize=T
 # 0.6407393
 # 0.7184354 single
+# 0.6267937

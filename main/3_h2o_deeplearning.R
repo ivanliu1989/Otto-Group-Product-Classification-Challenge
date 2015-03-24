@@ -19,8 +19,8 @@ test_df <- as.h2o(localH2O, test_df, key="test")
 independent <- colnames(train_df[,2:94])
 dependent <- "target"
 fit <- h2o.gbm(y = dependent, x = independent, data = train_df, 
-               n.trees = 150, interaction.depth = 8,
-               shrinkage = 0.1, distribution= "multinomial")
+               n.trees = 300, interaction.depth = 6,
+               shrinkage = 0.05, distribution= "multinomial")
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
 # fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
@@ -31,6 +31,11 @@ fit <- h2o.gbm(y = dependent, x = independent, data = train_df,
 #                         rate=0.1,nesterov_accelerated_gradient=T,shuffle_training_data=F)
 
 #adaptive_rate=0.9,l1=0.4,l2=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
+# 
+# fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
+#                         classification=T, ntree=150, depth=6, mtries=-1,
+#                         sample.rate=0.8, nbins=T, seed=8,nodesize=10,
+#                         verbose=T)
 
 pred <- h2o.predict(object = fit, newdata = test_df)
 pred_ensemble = format(as.data.frame(pred[,2:10]), digits=2,scientific=F) # shrink the size of submission
@@ -44,3 +49,5 @@ write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=
 # 0.511555 c(100,100)
 # 0.5188986 hidden=c(50,50,50)
 # 0.5203721 | 2.189166
+
+# 0.5186584 gbm

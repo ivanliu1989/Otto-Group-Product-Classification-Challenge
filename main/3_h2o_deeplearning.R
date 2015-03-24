@@ -29,13 +29,12 @@ fit <- h2o.gbm(y = dependent, x = independent, data = train_df,
 #                         hidden=c(10,10,10),epochs=12,variable_importances=T,
 #                         override_with_best_model=T,nfolds=10,seed=8,loss='CrossEntropy',
 #                         rate=0.1,nesterov_accelerated_gradient=T,shuffle_training_data=F)
-
 #adaptive_rate=0.9,l1=0.4,l2=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
-# 
-# fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
-#                         classification=T, ntree=150, depth=6, mtries=-1,
-#                         sample.rate=0.8, nbins=T, seed=8,nodesize=10,
-#                         verbose=T)
+
+fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
+                        classification=T, ntree=150, depth=60, mtries=-1,
+                        sample.rate=0.8, nbins=T, seed=8,verbose=T)
+# nodesize=10,
 
 pred <- h2o.predict(object = fit, newdata = test_df)
 pred_ensemble = format(as.data.frame(pred[,2:10]), digits=2,scientific=F) # shrink the size of submission

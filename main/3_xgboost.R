@@ -7,39 +7,39 @@ source('main/2_logloss_func.R')
 load(file='data/target.RData')
 load(file='data/raw_data_multi.RData')
 
-head(train);dim(train);train <- shuffle(train);head(train);dim(train);
-trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
-train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
+# trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+# train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
-train = train_df[,-which(names(train) %in% c("id"))] #train
-test = test_df[,-which(names(test) %in% c("id"))] #test
+train <- shuffle(train)
+train = train[,-which(names(train) %in% c("id"))] #train
+test = test[,-which(names(test) %in% c("id"))] #test
 
 y = train[,'target']
 y = gsub('Class_','',y)
 y = as.integer(y)-1 #xgboost take features in [0,numOfClass)
 
-x = rbind(train[,-which(names(train) %in% c("target"))],test[,-which(names(test) %in% c("target"))])#[,-which(names(test) %in% c("target"))])
+x = rbind(train[,-which(names(train) %in% c("target"))],test)#[,-which(names(test) %in% c("target"))])
 x = as.matrix(x)
 x = matrix(as.numeric(x),nrow(x),ncol(x))
 trind = 1:length(y)
 teind = (nrow(train)+1):nrow(x)
 dtrain <- x[trind,]
-dtest <- x[teind,]
+dtest <- data.matrix(x[teind,])
 
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 2, seed = 8, eta=0.05, gamma = 0.05,
-              "num_class" = 9, max.depth=8, min_child_weight=4,
-              subsample=0.9, colsample_bytree = 0.8)
-# max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8
+              "nthread" = 2, set.seed = 8, eta=0.05, gamma = 0.05,
+              "num_class" = 9, max.depth=8, min_child_weight=1,
+              subsample=0.8, colsample_bytree = 0.9)
+# max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
 # eta=0.3, gamma = 1, num_class" = 9, max.depth=10, min_child_weight=4, subsample=0.9, colsample_bytree = 0.8
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
 # Run Cross Valication
 cv.nround = 668
-bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
-                nrounds=cv.nround,prediction = TRUE)
+# bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
+#                 nrounds=cv.nround,prediction = TRUE)
 # bst.cv$dt
 # pred <- bst.cv$pred
 
@@ -53,28 +53,17 @@ pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
 
 ### Ensemble ###
-# pred5 <- pred
-# pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5)/5
+pred1 <- pred
+# pred_ensemble <- (pred1 + pred2)/2
 # for (i in 1:9){
 #     for (j in 1:nrow(pred1)){
-#         pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i])
+#         pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i])
 #     }
 # }
 
-### Beta varialble ###
-# pred = predict(bst,dtest)
-# pred = matrix(pred,9,length(pred)/9)
-# pred = t(pred)
-# dtest <- cbind(dtest, pred)
-# 
-# pred = predict(bst,dtrain)
-# pred = matrix(pred,9,length(pred)/9)
-# pred = t(pred)
-# dtrain <- cbind(dtrain,pred)
-
 ### Validation ###
-target_df <- target[-trainIndex,]
-MulLogLoss(target_df,pred)
+# target_df <- target[-trainIndex,]
+MulLogLoss(target,pred_ensemble)
 
 ### Output submission ###
 pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission
@@ -91,3 +80,8 @@ write.csv(pred_ensemble,file='submission_max_047.csv', quote=FALSE,row.names=FAL
 # 0.4759731 max.depth = 8, eta = 0.05, nround = 500, gamma = 0.05, subsample=0.8
 # 0.4763 max.depth = 6, eta = 0.03, nround = 1500, gamma = 0.03, subsample=0.8
 # 0.4760015 max.depth = 8, eta = 0.03, nround = 900, gamma = 0.03, subsample=0.8
+
+# 0.4709471 max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
+# 0.4693221 same
+# 0.4673917 avg 2
+# 0.4376464 max 2

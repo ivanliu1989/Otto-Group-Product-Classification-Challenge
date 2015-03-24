@@ -3,9 +3,7 @@ setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');
 setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
-source('main/2_logloss_func.R')
-load(file='data/target.RData')
-load(file='data/raw_data_multi.RData')
+source('main/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_multi.RData')
 
 # trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 # train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
@@ -29,22 +27,19 @@ dtest <- data.matrix(x[teind,])
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 2, set.seed = 8, eta=0.05, gamma = 0.05, #<<============#
+              "nthread" = 2, set.seed = 28, eta=0.05, gamma = 0.05, #<<============#
               "num_class" = 9, max.depth=8, min_child_weight=1,
               subsample=0.8, colsample_bytree = 0.9)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
-# eta=0.3, gamma = 1, num_class" = 9, max.depth=10, min_child_weight=4, subsample=0.9, colsample_bytree = 0.8
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
-# Run Cross Valication
+### Run Cross Valication
 cv.nround = 668
 # bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
 #                 nrounds=cv.nround,prediction = TRUE)
-# bst.cv$dt
-# pred <- bst.cv$pred
 
 ### Train the model ###
-set.seed(8) #<<============#
+set.seed(28) #<<============#
 bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
 
 ### Make prediction ###
@@ -53,8 +48,8 @@ pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
 
 ### Ensemble ###
-pred1 <- pred #<<============#
-save(pred1, file='../xgboost_pred1.RData') #<<============#
+pred3 <- pred #<<============#
+save(pred3, file='../xgboost_pred3.RData') #<<============#
 # pred_ensemble <- (pred1 + pred2)/2
 # for (i in 1:9){
 #     for (j in 1:nrow(pred1)){
@@ -77,9 +72,7 @@ write.csv(pred_ensemble,file='submission_max_047.csv', quote=FALSE,row.names=FAL
 # 0.4751727 /5
 # 0.439 /max
 
-# 0.4813311 max.depth = 6, eta = 0.1, nround = 400, gamma = 0.1, subsample=0.8
 # 0.4759731 max.depth = 8, eta = 0.05, nround = 500, gamma = 0.05, subsample=0.8
-# 0.4763 max.depth = 6, eta = 0.03, nround = 1500, gamma = 0.03, subsample=0.8
 # 0.4760015 max.depth = 8, eta = 0.03, nround = 900, gamma = 0.03, subsample=0.8
 
 # 0.4709471 max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9

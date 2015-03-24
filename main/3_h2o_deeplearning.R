@@ -51,3 +51,4 @@ write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=
 
 # 0.5186584 gbm
 # 0.5547743 rf mtries=30
+# 0.5400635 rf mtries=22, ntree=2000, depth=80

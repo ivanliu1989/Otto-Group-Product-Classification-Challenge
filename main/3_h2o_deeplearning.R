@@ -20,8 +20,11 @@ fit <- h2o.gbm(y = dependent, x = independent, data = train,
 
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train, 
                         classification=T,activation="Tanh",
-                        hidden=c(10,10,10),epochs=12,variable_importances=T)
-
+                        hidden=c(10,10,10),epochs=12,variable_importances=T,
+                        override_with_best_model=T,nfolds=10,seed=8,loss='CrossEntropy',
+                        epsilon=0.01,rate=0.1,rate_decay=0.1,nesterov_accelerated_gradient=T,
+                        input_dropout_ratio=0.1,max_w2=4,l1=0.4,l2=0.4,shuffle_training_data=T)
+#adaptive_rate=0.9,
 pred <- h2o.predict(object = fit, newdata = test)
 
 pred_ensemble = format(as.data.frame(pred[,2:10]), digits=2,scientific=F) # shrink the size of submission

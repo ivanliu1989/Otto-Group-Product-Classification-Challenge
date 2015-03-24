@@ -29,11 +29,10 @@ dtest <- x[teind,]
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 2, seed = 8,
-              "num_class" = 9, max.depth=8, min_child_weight=4,
+              "nthread" = 2, seed = 8, eta=0.3, gamma = 1,
+              "num_class" = 9, max.depth=10, min_child_weight=4,
               subsample=0.9, colsample_bytree = 0.8)
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
-# eta=0.03, gamma = 0.01, 
 
 # Run Cross Valication
 cv.nround = 250

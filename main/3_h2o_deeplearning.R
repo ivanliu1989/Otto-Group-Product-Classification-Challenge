@@ -8,7 +8,9 @@ load(file='data/target.RData')
 load(file='data/raw_data_log.RData') # raw_data_log_scale.RData
 
 localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
-h2o.clusterInfo(localH2O)
+# h2o.clusterInfo(localH2O)
+# h2o.rm(object= localH2O, keys= "DeepLearning_aa8d890913a2ad4d5f677dcad33849d2_xval2_holdout")
+# h2o.ls(localH2O)
 
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
@@ -26,7 +28,7 @@ dependent <- "target"
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="Rectifier",#TanhWithDropout
                         #input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5),
-                        hidden=c(200),epochs=100,variable_importances=F,
+                        hidden=c(200),epochs=16,variable_importances=F,
                         override_with_best_model=T,nfolds=10,seed=8,loss='CrossEntropy',
                         l2=0.001,rate=0.1,nesterov_accelerated_gradient=F,shuffle_training_data=F)
 # adaptive_rate=0.9,l1=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,

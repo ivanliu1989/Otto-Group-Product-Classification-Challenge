@@ -23,6 +23,7 @@ dependent <- "target"
 #                shrinkage = 0.05, distribution= "multinomial")
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
+### Scale ###
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="RectifierWithDropout",#TanhWithDropout
                         input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5),

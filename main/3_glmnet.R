@@ -5,8 +5,7 @@ rm(list=ls());gc()
 require(caret);require(glmnet)
 source('main/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_multi.RData')
-# load(file='data/raw_data_PCA.RData')
+load(file='data/raw_data_log_scale.RData') # raw_data_log_scale.RData
 
 dim(train);set.seed(888)
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)

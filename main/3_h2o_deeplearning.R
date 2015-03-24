@@ -18,21 +18,21 @@ test_df <- as.h2o(localH2O, test_df, key="test")
 
 independent <- colnames(train_df[,2:94])
 dependent <- "target"
-fit <- h2o.gbm(y = dependent, x = independent, data = train_df, 
-               n.trees = 300, interaction.depth = 6,
-               shrinkage = 0.05, distribution= "multinomial")
+# fit <- h2o.gbm(y = dependent, x = independent, data = train_df, 
+#                n.trees = 300, interaction.depth = 6,
+#                shrinkage = 0.05, distribution= "multinomial")
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
 # fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
 #                         classification=T,activation="Tanh",#TanhWithDropout
 #                         #input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),
-#                         hidden=c(10,10,10),epochs=12,variable_importances=T,
+#                         hidden=c(100,100,100),epochs=12,variable_importances=T,
 #                         override_with_best_model=T,nfolds=10,seed=8,loss='CrossEntropy',
 #                         rate=0.1,nesterov_accelerated_gradient=T,shuffle_training_data=F)
-#adaptive_rate=0.9,l1=0.4,l2=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
+# adaptive_rate=0.9,l1=0.4,l2=0.4,rate_decay=0.1,epsilon=0.01,max_w2=4,
 
 fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
-                        classification=T, ntree=150, depth=60, mtries=-1,
+                        classification=T, ntree=500, depth=30, mtries=30,
                         sample.rate=0.8, nbins=T, seed=8,verbose=T)
 # nodesize=10,
 
@@ -50,3 +50,4 @@ write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=
 # 0.5203721 | 2.189166
 
 # 0.5186584 gbm
+# 0.5547743 rf mtries=30

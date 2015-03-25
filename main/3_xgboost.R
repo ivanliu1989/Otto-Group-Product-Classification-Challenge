@@ -5,18 +5,18 @@ rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 source('main/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_multi.RData')
 
-# trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
-# train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
+trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train <- shuffle(train) #<<============#
-train = train[,-which(names(train) %in% c("id"))] #train
-test = test[,-which(names(test) %in% c("id"))] #test
+train = train_df[,-which(names(train) %in% c("id"))] #train
+test = test_df[,-which(names(test) %in% c("id"))] #test
 
 y = train[,'target']
 y = gsub('Class_','',y)
 y = as.integer(y)-1 #xgboost take features in [0,numOfClass)
 
-x = rbind(train[,-which(names(train) %in% c("target"))],test)#[,-which(names(test) %in% c("target"))])
+x = rbind(train[,-which(names(train) %in% c("target"))],test[,-which(names(test) %in% c("target"))])#[,-which(names(test) %in% c("target"))])
 x = as.matrix(x)
 x = matrix(as.numeric(x),nrow(x),ncol(x))
 trind = 1:length(y)
@@ -28,19 +28,19 @@ dtest <- data.matrix(x[teind,])
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
               "nthread" = 2, set.seed = 168, eta=0.05, gamma = 0.05, #<<============#
-              "num_class" = 9, max.depth=8, min_child_weight=1,
+              "num_class" = 9, max.depth=8, min_child_weight=4,
               subsample=0.8, colsample_bytree = 0.9)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
 ### Run Cross Valication
 cv.nround = 668
-# bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
-#                 nrounds=cv.nround,prediction = TRUE)
+bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
+                nrounds=cv.nround,prediction = TRUE)
 
 ### Train the model ###
 set.seed(168) #<<============#
-bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
+# bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
 
 ### Make prediction ###
 pred = predict(bst,dtest)#, ntreelimit=1

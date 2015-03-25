@@ -45,3 +45,25 @@ for (i in 1:tot_round){
     save(pred, file=paste0('../xgboost_pred',(17+i),'.RData')) #<<============#
 
 }
+
+### Ensemble ###
+require(data.table)
+
+pred_ensemble <- matrix(0, nrow = 144368, ncol = 9, dimnames = list(NULL, NULL))
+datadirectory <- '../otto-result' # 'results/best'
+files <- list.files(datadirectory,full.names = T)
+
+for (file in files){
+    load(file)    
+}
+ls()
+for (i in 1:9){
+    for (j in 1:nrow(pred_ensemble)){
+        pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i],pred6[j,i]
+                                  ,pred7[j,i],pred8[j,i],pred9[j,i],pred10[j,i])
+    }
+}
+pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission
+pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
+names(pred_ensemble) = c('id', paste0('Class_',1:9))
+write.csv(pred_ensemble,file=paste0('../submission_max_',length(files),'.csv'), quote=FALSE,row.names=FALSE)

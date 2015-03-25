@@ -47,22 +47,40 @@ for (i in 1:tot_round){
 }
 
 ### Ensemble ###
+rm(list=ls());gc()
 require(data.table)
 
-pred_ensemble <- matrix(0, nrow = 144368, ncol = 9, dimnames = list(NULL, NULL))
 datadirectory <- '../otto-result' # 'results/best'
 files <- list.files(datadirectory,full.names = T)
-
+i <- 36
 for (file in files){
+    i <- i+1
     load(file)    
+    write.csv(pred,file=paste0('../sub_tree_',i,'.csv'), quote=FALSE,row.names=FALSE)
 }
-ls()
+
+all_result <- list()
+j=1
+for (file in files){
+    all_result[[j]] <- as.data.frame(fread(file,stringsAsFactors = F))
+    j <- j + 1
+}
+
+pred_ensemble <- matrix(0, nrow = 144368, ncol = 9, dimnames = list(NULL, NULL))
 for (i in 1:9){
     for (j in 1:nrow(pred_ensemble)){
-        pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i],pred6[j,i]
-                                  ,pred7[j,i],pred8[j,i],pred9[j,i],pred10[j,i])
+        pred_ensemble[j,i] <- max(all_result[[1]][j,i],all_result[[2]][j,i],all_result[[3]][j,i],all_result[[4]][j,i],all_result[[5]][j,i],all_result[[6]][j,i],
+                                  all_result[[7]][j,i],all_result[[8]][j,i],all_result[[9]][j,i],all_result[[10]][j,i],all_result[[11]][j,i],all_result[[12]][j,i],
+                                  all_result[[13]][j,i],all_result[[14]][j,i],all_result[[15]][j,i],all_result[[16]][j,i],all_result[[17]][j,i],all_result[[18]][j,i],
+                                  all_result[[19]][j,i],all_result[[20]][j,i],all_result[[21]][j,i],all_result[[22]][j,i],all_result[[23]][j,i],all_result[[24]][j,i],
+                                  all_result[[25]][j,i],all_result[[26]][j,i],all_result[[27]][j,i],all_result[[28]][j,i],all_result[[29]][j,i],all_result[[30]][j,i],
+                                  all_result[[31]][j,i],all_result[[32]][j,i],all_result[[33]][j,i],all_result[[34]][j,i],all_result[[35]][j,i],all_result[[36]][j,i],
+                                  all_result[[37]][j,i],all_result[[38]][j,i],all_result[[39]][j,i],all_result[[40]][j,i],all_result[[41]][j,i],all_result[[42]][j,i],
+                                  all_result[[43]][j,i],all_result[[44]][j,i],all_result[[45]][j,i],all_result[[46]][j,i],all_result[[47]][j,i],all_result[[48]][j,i],
+                                  all_result[[49]][j,i],all_result[[50]][j,i],all_result[[51]][j,i],all_result[[52]][j,i],all_result[[53]][j,i])
     }
 }
+
 pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission
 pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
 names(pred_ensemble) = c('id', paste0('Class_',1:9))

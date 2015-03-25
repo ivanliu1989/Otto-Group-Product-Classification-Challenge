@@ -27,16 +27,16 @@ dependent <- "target"
 
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="TanhWithDropout",#TanhWithDropout Rectifier
-                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5),seed=8,
-                        hidden=c(500,500),epochs=3,variable_importances=F,rate_decay=0.3,rate=0.01,
+                        input_dropout_ratio = 0,hidden_dropout_ratios = c(0,0),seed=8,
+                        hidden=c(500,500),epochs=3,variable_importances=F,rate_decay=0.3,rate=0.15,
                         override_with_best_model=F,loss='CrossEntropy',nesterov_accelerated_gradient=T,
-                        l1=3e-6, l2=6e-6,shuffle_training_data=T,max_w2=4)
-# ,nfolds=10,adaptive_rate=0.9,,epsilon=0.01
+                        l1=1e-5, l2=1e-5,shuffle_training_data=T,max_w2=4, epsilon = 1e-8, rho = 0.99, train_samples_per_iteration = -2)
+# ,nfolds=10,adaptive_rate=0.9,
 
-# fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
-#                         classification=T, ntree=500, depth=30, mtries=30,
-#                         sample.rate=0.8, nbins=T, seed=8,verbose=T)
-# nodesize=10,
+# fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, type = "BigData",
+#                         classification=T, ntree=50, depth=30, mtries=30,
+#                         sample.rate=0.8, nbins = 30, seed=8,verbose=T)
+# nodesize=10, validation=
 
 pred <- h2o.predict(object = fit, newdata = test_df)
 pred_ensemble = format(as.data.frame(pred[,2:10]), digits=2,scientific=F) # shrink the size of submission
@@ -47,10 +47,7 @@ pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
 names(pred_ensemble) = c('id', paste0('Class_',1:9))
 write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=FALSE)
 
-# 0.511555 c(100,100)
-# 0.5188986 hidden=c(50,50,50)
-# 0.5203721 | 2.189166
-
+h2o.shutdown(h2oServer)
 # 0.5186584 gbm
 # 0.5547743 rf mtries=30
 # 0.5400635 rf mtries=22, ntree=2000, depth=80

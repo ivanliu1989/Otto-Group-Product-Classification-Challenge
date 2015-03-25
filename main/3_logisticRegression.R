@@ -4,7 +4,7 @@ setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Produc
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 
-tot_round <- 10
+tot_round <- 50
 for (i in 1:tot_round){
     
     set.seed((8+i*8)) #<<============#
@@ -30,8 +30,8 @@ for (i in 1:tot_round){
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
                   "nthread" = 2, set.seed = (8+i*8), eta=0.05, gamma = 0.05, #<<============#
-                  "num_class" = 9, max.depth=8, min_child_weight=1,
-                  subsample=0.8, colsample_bytree = 0.9)
+                  "num_class" = 9, max.depth=8, min_child_weight=4,
+                  subsample=0.8, colsample_bytree = runif(1,0.85,0.95))
     cv.nround = 668
     
     ### Train the model ###

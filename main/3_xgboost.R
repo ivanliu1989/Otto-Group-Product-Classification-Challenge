@@ -29,7 +29,7 @@ param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
               "nthread" = 2, set.seed = 168, eta=0.05, gamma = 0.05, #<<============#
               "num_class" = 9, max.depth=8, min_child_weight=1,
-              subsample=0.8, colsample_bytree = 0.9)
+              subsample=0.8, colsample_bytree = 1)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
@@ -80,6 +80,7 @@ write.csv(pred_ensemble,file='submission_max_10.csv', quote=FALSE,row.names=FALS
 # 0.4693221 same
 
 # 0.4699977 min_child_weight = 4
+# 0.4764768 1
 
 # 0.4673917 avg 2
 # 0.4376464 max 2

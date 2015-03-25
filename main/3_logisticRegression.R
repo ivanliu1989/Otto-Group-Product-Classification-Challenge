@@ -84,4 +84,4 @@ for (i in 1:9){
 pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission
 pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
 names(pred_ensemble) = c('id', paste0('Class_',1:9))
-write.csv(pred_ensemble,file=paste0('../submission_max_53.csv'), quote=FALSE,row.names=FALSE)
+write.csv(pred_ensemble,file=paste0('../submission_sum_53.csv'), quote=FALSE,row.names=FALSE)

@@ -4,15 +4,20 @@ setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Produc
 rm(list=ls());gc()
 require(data.table);require(caret)
 
-ensemble <- data.matrix(fread('../submission_max_53.csv',stringsAsFactors = F))
-a <- apply(ensemble[,2:10],1,sum)
+pred_ensemble <- data.matrix(fread('../submission_sum_53.csv',stringsAsFactors = F))
+pred_ensemble <- pred_ensemble[,2:10]
+a <- apply(pred_ensemble,1,sum)
 
-for (i in 1:nrow(ensemble)){
-    ensemble[i,2:10] <- ensemble[i,2:10] * 1 / a[i]
+for (i in 1:nrow(pred_ensemble)){
+    pred_ensemble[i,] <- pred_ensemble[i,] * 1 / a[i]
 }
-b <- apply(ensemble[,2:10],1,sum)
+b <- apply(pred_ensemble,1,sum)
 
-which(ensemble[,2:10] == 1)
+which(pred_ensemble == 1)
 
-ensemble = data.frame(ensemble)
-write.csv(ensemble,file=paste0('../submission_max_53_cali.csv'), quote=FALSE,row.names=FALSE)
+pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission
+pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
+names(pred_ensemble) = c('id', paste0('Class_',1:9))
+
+head(pred_ensemble)
+write.csv(pred_ensemble,file=paste0('../submission_sum_53_cali.csv'), quote=FALSE,row.names=FALSE)

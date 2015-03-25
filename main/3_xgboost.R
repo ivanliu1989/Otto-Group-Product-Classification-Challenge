@@ -27,7 +27,7 @@ dtest <- data.matrix(x[teind,])
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 2, set.seed = 98, eta=0.05, gamma = 0.05, #<<============#
+              "nthread" = 2, set.seed = 168, eta=0.05, gamma = 0.05, #<<============#
               "num_class" = 9, max.depth=8, min_child_weight=1,
               subsample=0.8, colsample_bytree = 0.9)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
@@ -39,7 +39,7 @@ cv.nround = 668
 #                 nrounds=cv.nround,prediction = TRUE)
 
 ### Train the model ###
-set.seed(98) #<<============#
+set.seed(168) #<<============#
 bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
 
 ### Make prediction ###
@@ -48,15 +48,15 @@ pred = matrix(pred,9,length(pred)/9)
 pred = t(pred)
 
 ### Ensemble ###
-pred10 <- pred #<<============#
-save(pred10, file='../xgboost_pred10.RData') #<<============#
-pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5 + pred6 + pred7 + pred8 + pred9 + pred10)/10
-for (i in 1:9){
-    for (j in 1:nrow(pred1)){
-        pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i],pred6[j,i]
-                                  ,pred7[j,i],pred8[j,i],pred9[j,i],pred10[j,i])
-    }
-}
+pred17 <- pred #<<============#
+save(pred17, file='../xgboost_pred17.RData') #<<============#
+# pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5 + pred6 + pred7 + pred8 + pred9 + pred10)/10
+# for (i in 1:9){
+#     for (j in 1:nrow(pred1)){
+#         pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i],pred6[j,i]
+#                                   ,pred7[j,i],pred8[j,i],pred9[j,i],pred10[j,i])
+#     }
+# }
 
 ### Validation ###
 # target_df <- target[-trainIndex,]

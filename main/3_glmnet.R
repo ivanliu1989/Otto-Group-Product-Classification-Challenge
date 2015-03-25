@@ -30,7 +30,7 @@ dtest <- x[teind,]
 # mul_val <- target[-trainIndex,]
 #for (n in 1:9){
     #n <- 1
-    fit <- glmnet(y=target[trainIndex,], x=dtrain, family="multinomial",alpha=1,standardize=F,
+    fit <- glmnet(y=target[trainIndex,], x=dtrain, family="multinomial",alpha=1,standardize=T,
                   type.logistic="Newton", nlambda=100, intercept=T, maxit=10^5,type.multinomial="ungrouped")
     #family="mgaussian" , #alpha=1 is the lasso penalty, and alpha=0 the ridge penalty
     # ungrouped,multinomial

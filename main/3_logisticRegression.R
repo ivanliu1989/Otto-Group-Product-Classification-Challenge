@@ -4,20 +4,21 @@ setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Produc
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 
-for (i in 1:10){
+tot_round <- 10
+for (i in 1:tot_round){
     
     set.seed((8+i*8)) #<<============#
     source('main/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_multi.RData')
     
     train <- shuffle(train) #<<============#
-    train = train[,-which(names(train) %in% c("id"))] #train
-    test = test[,-which(names(test) %in% c("id"))] #test
+    train = train[,-which(names(train) %in% c("id"))]
+    test = test[,-which(names(test) %in% c("id"))]
     
     y = train[,'target']
     y = gsub('Class_','',y)
-    y = as.integer(y)-1 #xgboost take features in [0,numOfClass)
+    y = as.integer(y)-1 
     
-    x = rbind(train[,-which(names(train) %in% c("target"))],test)#[,-which(names(test) %in% c("target"))])
+    x = rbind(train[,-which(names(train) %in% c("target"))],test)
     x = as.matrix(x)
     x = matrix(as.numeric(x),nrow(x),ncol(x))
     trind = 1:length(y)

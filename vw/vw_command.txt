@@ -1,0 +1,8 @@
+alias vw=/Users/ivan/Work_directory/vowpal_wabbit-7.10/vowpalwabbit/vw
+====================
+vw test.vw -t -i model.vw -p pred.txt
+
+vw -d train.vw -b 28 -l 0.1 -c -k --passes 3 -f model.vw --holdout_period 50 --log_multi 9
+--oaa 9  
+--nn 60
+

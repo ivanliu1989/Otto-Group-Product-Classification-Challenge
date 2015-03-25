@@ -27,8 +27,8 @@ dependent <- "target"
 
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="TanhWithDropout",#TanhWithDropout Rectifier
-                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),seed=8,
-                        hidden=c(500,500,500),epochs=5,variable_importances=F,rate_decay=0.3,rate=0.1,
+                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5),seed=8,
+                        hidden=c(500,500),epochs=3,variable_importances=F,rate_decay=0.3,rate=0.01,
                         override_with_best_model=F,loss='CrossEntropy',nesterov_accelerated_gradient=T,
                         l1=3e-6, l2=6e-6,shuffle_training_data=T,max_w2=4)
 # ,nfolds=10,adaptive_rate=0.9,,epsilon=0.01

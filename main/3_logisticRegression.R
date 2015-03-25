@@ -7,7 +7,7 @@ require(caret);require(methods);require(xgboost)
 tot_round <- 50
 for (i in 1:tot_round){
     
-    set.seed((8+i*8)) #<<============#
+    set.seed((9+i*8)) #<<============#
     source('main/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_multi.RData')
     
     train <- shuffle(train) #<<============#
@@ -29,7 +29,7 @@ for (i in 1:tot_round){
     ### Set necessary parameter ###
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
-                  "nthread" = 2, set.seed = (8+i*8), eta=0.05, gamma = 0.05, #<<============#
+                  "nthread" = 2, set.seed = (9+i*8), eta=0.05, gamma = 0.05, #<<============#
                   "num_class" = 9, max.depth=8, min_child_weight=4,
                   subsample=0.8, colsample_bytree = runif(1,0.85,0.95))
     cv.nround = 668
@@ -42,7 +42,7 @@ for (i in 1:tot_round){
     pred = matrix(pred,9,length(pred)/9)
     pred = t(pred)
     
-    save(pred, file=paste0('../xgboost_pred',(17+i),'.RData')) #<<============#
+    save(pred, file=paste0('../xgboost_pred',(53+i),'.RData')) #<<============#
 
 }
 

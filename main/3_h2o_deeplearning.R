@@ -27,11 +27,11 @@ dependent <- "target"
 
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="TanhWithDropout",#TanhWithDropout Rectifier
-                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5),
-                        hidden=c(512,512),epochs=1,variable_importances=F,rate_decay=0.3,rate=0.1,
-                        override_with_best_model=F,loss='CrossEntropy',nesterov_accelerated_gradient=F,
+                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),seed=8,
+                        hidden=c(500,500,500),epochs=10,variable_importances=F,rate_decay=0.3,rate=0.1,
+                        override_with_best_model=F,loss='CrossEntropy',nesterov_accelerated_gradient=T,
                         l1=3e-6, l2=6e-6,shuffle_training_data=T,max_w2=4)
-# ,epsilon=0.1,nesterov_accelerated_gradient=F,nfolds=10,seed=8,adaptive_rate=0.9,
+# ,nfolds=10,adaptive_rate=0.9,,epsilon=0.01
 
 # fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
 #                         classification=T, ntree=500, depth=30, mtries=30,
@@ -58,4 +58,6 @@ write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=
 
 # 1.462512 deepLearning
 # 0.9236796 hidden=c(512,512),rate_decay=0.3,input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5),l1=3e-6,l2=6e-6,max_w2=4
-# 0.8025674 rate=0.1
+# 0.8025674 input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),hidden=c(500,500,500),
+# epochs=5,variable_importances=F,rate_decay=0.3,rate=0.1,nesterov_accelerated_gradient=T,
+# l1=3e-6, l2=6e-6,shuffle_training_data=T,max_w2=4

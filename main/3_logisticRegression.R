@@ -69,7 +69,7 @@ for (file in files){
 pred_ensemble <- matrix(0, nrow = 144368, ncol = 9, dimnames = list(NULL, NULL))
 for (i in 1:9){
     for (j in 1:nrow(pred_ensemble)){
-        pred_ensemble[j,i] <- max(all_result[[1]][j,i],all_result[[2]][j,i],all_result[[3]][j,i],all_result[[4]][j,i],all_result[[5]][j,i],all_result[[6]][j,i],
+        pred_ensemble[j,i] <- sum(all_result[[1]][j,i],all_result[[2]][j,i],all_result[[3]][j,i],all_result[[4]][j,i],all_result[[5]][j,i],all_result[[6]][j,i],
                                   all_result[[7]][j,i],all_result[[8]][j,i],all_result[[9]][j,i],all_result[[10]][j,i],all_result[[11]][j,i],all_result[[12]][j,i],
                                   all_result[[13]][j,i],all_result[[14]][j,i],all_result[[15]][j,i],all_result[[16]][j,i],all_result[[17]][j,i],all_result[[18]][j,i],
                                   all_result[[19]][j,i],all_result[[20]][j,i],all_result[[21]][j,i],all_result[[22]][j,i],all_result[[23]][j,i],all_result[[24]][j,i],

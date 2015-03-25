@@ -28,10 +28,10 @@ dependent <- "target"
 fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
                         classification=T,activation="Rectifier",#TanhWithDropout
                         #input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0.5,0.5,0.5),
-                        hidden=c(150),epochs=16,variable_importances=F,
-                        override_with_best_model=F,nfolds=10,seed=8,loss='CrossEntropy',
-                        epsilon=0.1,rate=0.1,nesterov_accelerated_gradient=F,shuffle_training_data=T)
-# adaptive_rate=0.9,l1=0.4,rate_decay=0.1,,max_w2=4,l2=0.001
+                        hidden=c(100,100),epochs=1,variable_importances=F,
+                        override_with_best_model=F,loss='CrossEntropy',
+                        shuffle_training_data=T)
+# adaptive_rate=0.9,l1=0.4,rate_decay=0.1,,max_w2=4,l2=0.001,epsilon=0.1,rate=0.1,nesterov_accelerated_gradient=F,nfolds=10,seed=8,
 
 # fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, 
 #                         classification=T, ntree=500, depth=30, mtries=30,

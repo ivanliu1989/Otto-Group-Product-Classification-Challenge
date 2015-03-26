@@ -50,13 +50,14 @@ pred = t(pred)
 ### Ensemble ###
 # pred17 <- pred #<<============#
 # save(pred17, file='../xgboost_pred17.RData') #<<============#
-# pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5 + pred6 + pred7 + pred8 + pred9 + pred10)/10
-# for (i in 1:9){
-#     for (j in 1:nrow(pred1)){
-#         pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i],pred6[j,i]
-#                                   ,pred7[j,i],pred8[j,i],pred9[j,i],pred10[j,i])
-#     }
-# }
+pred_ensemble <- (pred1 + pred2 + pred3 + pred4 + pred5 + pred6 + pred7 + pred8 + pred9 + pred10)/10
+for (i in 1:9){
+    for (j in 1:nrow(pred1)){
+        pred_ensemble[j,i] <- max(pred1[j,i],pred2[j,i],pred3[j,i],pred4[j,i],pred5[j,i],pred6[j,i]
+                                  ,pred7[j,i],pred8[j,i],pred9[j,i],pred10[j,i],pred11[j,i],pred12[j,i],pred13[j,i],pred14[j,i],
+                                  pred15[j,i],pred16[j,i],pred17[j,i])
+    }
+}
 
 ### Validation ###
 target_df <- target[-trainIndex,]
@@ -66,7 +67,7 @@ MulLogLoss(target_df,pred)
 pred_ensemble = format(pred_ensemble, digits=2,scientific=F) # shrink the size of submission
 pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
 names(pred_ensemble) = c('id', paste0('Class_',1:9))
-write.csv(pred_ensemble,file='submission_max_10.csv', quote=FALSE,row.names=FALSE)
+write.csv(pred_ensemble,file='submission_max_17.csv', quote=FALSE,row.names=FALSE)
 
 
 # 0.4762001 pred3

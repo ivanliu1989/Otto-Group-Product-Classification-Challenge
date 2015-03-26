@@ -14,10 +14,8 @@ np.random.seed(888)
 
 def multiclass_log_loss(y_true, y_pred, eps=1e-15):
     predictions = np.clip(y_pred, eps, 1 - eps)
-
     # normalize row sums to 1
     predictions /= predictions.sum(axis=1)[:, np.newaxis]
-
     actual = np.zeros(y_pred.shape)
     rows = actual.shape[0]
     actual[np.arange(rows), y_true.astype(int)] = 1
@@ -29,16 +27,12 @@ def load_test_data(path=None, log=True, scale=True):
         df = pd.read_csv('../../test.csv')
     else:
         df = pd.read_csv(path)
-    
     if log:
         df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
-        
     X = df.values
-    
     if scale:
         min_max_scaler = preprocessing.MinMaxScaler()
         X = min_max_scaler.fit_transform(X)
-        
     X_test, ids = X[:, 1:], X[:, 0]
     return X_test.astype(float), ids.astype(str)
 
@@ -47,26 +41,20 @@ def load_train_data(path=None, train_size=0.7, log=True, scale=True, shuffle=Tru
        df = pd.read_csv('../../train.csv')
     else:
         df = pd.read_csv(path)
-    
     if log:
         df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
-        
     X = df.values.copy()
-    
     if scale:
         min_max_scaler = preprocessing.MinMaxScaler()
         X = min_max_scaler.fit_transform(X)
-        
     if shuffle:
         np.random.shuffle(X)
-        
     X_train, X_valid, Y_train, Y_valid = train_test_split(
         X[:, 1:-1], X[:, -1], train_size=train_size,
     )
     print(" -- Loaded data.")
     return (X_train.astype(float), X_valid.astype(float),
             Y_train.astype(str), Y_valid.astype(str))
-
 
 train_df, test_df, train_y, test_y = load_train_data()
 encoder = LabelEncoder()
@@ -97,8 +85,7 @@ clf = SVC(C=1.0, kernel='rbf', degree=3, gamma=0.0, shrinking=True, probability=
 clf.fit(train,targets)
 y_pred = clf.predict_proba(test)
 
-
-submission = pd.read_csv('sampleSubmission.csv')
+submission = pd.read_csv('../data/sampleSubmission.csv')
 submission.set_index('id', inplace=True)
 submission[:] = y_pred
 submission.to_csv('benchmark_svm.csv')

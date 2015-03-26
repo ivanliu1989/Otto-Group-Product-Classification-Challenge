@@ -4,7 +4,6 @@ Created on Thu Mar 26 11:38:01 2015
 
 @author: ivan
 """
-
 import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split
@@ -41,6 +40,7 @@ def multiclass_log_loss(y_true, y_pred, eps=1e-15):
     vsota = np.sum(actual * np.log(predictions))
     return -1.0 / rows * vsota
 
+
 def load_test_data(path=None):
     if path is None:
         df = pd.read_csv('../../test.csv')
@@ -67,16 +67,16 @@ def load_train_data(path=None, train_size=0.7):
 
 
 train_df, test_df, train_y, test_y = load_train_data()
-best = 10.
 encoder = LabelEncoder()
 test_y = encoder.fit_transform(test_y)
 train_y = encoder.fit_transform(train_y)
-    
-for n in range(15,90):
-    
-    clf = PLSRegression(n_components=n, scale=True, tol=1e-06, max_iter=500)
+
+best = 10.    
+for n in [16,18,20,22,24,26,28,30,32,34,36,38,40]:
+    clf = RandomForestClassifier(n_estimators=150, max_depth=38, max_features=n, verbose=0) #
+    #clf = PLSRegression(n_components=n, scale=True, tol=1e-06, max_iter=500)
     clf.fit(train_df,train_y)
-    y_pred = clf.predict(test_df)
+    y_pred = clf.predict_proba(test_df)
     loss = multiclass_log_loss(test_y,y_pred)
     if loss < best:
         n_best = n
@@ -87,9 +87,9 @@ for n in range(15,90):
     print ('comps: {:02d}\tLoss:{:5.4f} {}'.format(n,loss,postfix))
 
 
-clf = PLSRegression(n_components=n_best)  
+clf = RandomForestClassifier(n_estimators=n_best, max_depth=8, max_features=20, verbose=0)
 clf.fit(train,targets)
-y_pred = clf.predict(test)
+y_pred = clf.predict_proba(test)
 
 
 submission = pd.read_csv('sampleSubmission.csv')

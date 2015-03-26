@@ -3,22 +3,22 @@ setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');
 setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 library(h2o);library(caret)
-source('main/2_logloss_func.R')
+source('main_R/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_log.RData') # raw_data_log_scale.RData
+load(file='data/raw_data_sparse.RData') # raw_data_log_scale.RData
 
 localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
 # h2o.clusterInfo(localH2O)
 # h2o.rm(object= localH2O, keys= "DeepLearning_aa8d890913a2ad4d5f677dcad33849d2_xval2_holdout")
 # h2o.ls(localH2O)
-
+train <- data.frame(train)
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train_df <- as.h2o(localH2O, train_df, key="train")
 test_df <- as.h2o(localH2O, test_df, key="test")
 
-independent <- colnames(train_df[,2:94])
+independent <- colnames(train_df[,2:(ncol(train_df)-1)])
 dependent <- "target"
 # fit <- h2o.gbm(y = dependent, x = independent, data = train_df, 
 #                n.trees = 300, interaction.depth = 6,

@@ -78,9 +78,9 @@ for n in [0.01,0.1,1,10,100]:
         postfix = ''
     print ('comps: {:02}\tLoss:{:5.4f} {}'.format(n,loss,postfix))
 
-# C <- [0.01,0.1,1,10,100]
+# C <- [2^-5,2^-3,2^-1,2,2^3,2^5,2^7,2^9,2^11,2^13,2^15] # lose grid => fine grid
 # degree <- [1,2,3]
-# gamma <- [0.001,0.01,0.1,1]
+# gamma <- [2^-15,2^-13,2^-11,2^-9,2^-7,2^-5,2^-3,2^-1,2,2^3] # lose grid => fine grid
 
 clf = SVC(C=1.0, kernel='rbf', degree=3, gamma=0.0, shrinking=True, probability=True, tol=0.001, cache_size=200, verbose=True, max_iter=-1)
 clf.fit(train,targets)

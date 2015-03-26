@@ -32,6 +32,9 @@ registerDoMC(cores = 2)
 
 fit <- svm(y=as.factor(y), x=dtrain, scale=T, type='C-classification', kernel='radial', degree=3, gamma=0.001,
            cost=1,cachesize=1024,tolerance=0.001,epsilon=0.1,shrinking=T,fitted=T,probability=T)
+# degree <- c(1:3)
+# cost <- c(2^-5,2^-3,2^-1,2,2^3,2^5,2^7,2^9,2^11,2^13,2^15)
+# gamma <- c(2^-15,2^-13,2^-11,2^-9,2^-7,2^-5,2^-3,2^-1,2,2^3)
 val <- predict(fit, newx=dtest,type = "prob")
 
 target_df <- target[-trainIndex,]

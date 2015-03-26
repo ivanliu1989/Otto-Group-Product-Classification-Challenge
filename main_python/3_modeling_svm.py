@@ -84,9 +84,11 @@ for n in [0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5]:
 # C 4000(0.5335)
 # gamma 0.5 (0.5320)
 
+train_df, test_df, train_y, test_y = load_train_data(train_size=1)
+test_x, test_y = load_test_data()
 clf = SVC(C=1.0, kernel='rbf', degree=3, gamma=0.0, shrinking=True, probability=True, tol=0.001, cache_size=200, verbose=True, max_iter=-1)
 clf.fit(train,targets)
-y_pred = clf.predict_proba(test)
+y_pred = clf.predict_proba(test_x)
 
 submission = pd.read_csv('../data/sampleSubmission.csv')
 submission.set_index('id', inplace=True)

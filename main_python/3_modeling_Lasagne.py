@@ -28,10 +28,10 @@ def load_test_data(path=None, log=True, scale=True):
         df = pd.read_csv(path)
     if log:
         df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
-    X = df.values
     if scale:
-        min_max_scaler = preprocessing.MinMaxScaler()
-        X = min_max_scaler.fit_transform(X)
+        min_max_scaler = MinMaxScaler()
+        df.ix[:,1:94] = min_max_scaler.fit_transform(df.ix[:,1:94])
+    X = df.values
     X_test, ids = X[:, 1:], X[:, 0]
     return X_test.astype(float), ids.astype(str)
 
@@ -42,10 +42,10 @@ def load_train_data(path=None, train_size=0.7, log=True, scale=True, shuffle=Tru
         df = pd.read_csv(path)
     if log:
         df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
-    X = df.values.copy()
     if scale:
-        min_max_scaler = preprocessing.MinMaxScaler()
-        X = min_max_scaler.fit_transform(X)
+        min_max_scaler = MinMaxScaler()
+        df.ix[:,1:94] = min_max_scaler.fit_transform(df.ix[:,1:94])
+    X = df.values.copy()
     if shuffle:
         np.random.shuffle(X)
     X_train, X_valid, Y_train, Y_valid = train_test_split(

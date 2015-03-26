@@ -41,24 +41,43 @@ def multiclass_log_loss(y_true, y_pred, eps=1e-15):
     vsota = np.sum(actual * np.log(predictions))
     return -1.0 / rows * vsota
 
-train = pd.read_csv('../../train.csv', index_col='id')
-targets = pd.get_dummies(train.target)
-train.drop('target', axis=1, inplace=True)
-train = train.apply(np.log1p)
+def load_test_data(path=None):
+    if path is None:
+        df = pd.read_csv('../../test.csv')
+    else:
+        df = pd.read_csv(path)
+    X = df.values
+    X_test, ids = X[:, 1:], X[:, 0]
+    return X_test.astype(float), ids.astype(str)
 
-test = pd.read_csv('../../test.csv', index_col='id')
-test = test.apply(np.log1p)    
+def load_train_data(path=None, train_size=0.7):
+    if path is None:
+       df = pd.read_csv('../../train.csv')
+    else:
+        df = pd.read_csv(path)
+    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    X = df.values.copy()
+    np.random.shuffle(X)
+    X_train, X_valid, Y_train, Y_valid = train_test_split(
+        X[:, 1:-1], X[:, -1], train_size=train_size,
+    )
+    print(" -- Loaded data.")
+    return (X_train.astype(float), X_valid.astype(float),
+            Y_train.astype(str), Y_valid.astype(str))
 
-train_df, test_df, train_y, test_y = train_test_split(train, targets, test_size=0.3, random_state=8)
 
+train_df, test_df, train_y, test_y = load_train_data()
 best = 10.
-
+encoder = LabelEncoder()
+test_y = encoder.fit_transform(test_y)
+train_y = encoder.fit_transform(train_y)
+    
 for n in range(15,90):
     
     clf = PLSRegression(n_components=n, scale=True, tol=1e-06, max_iter=500)
     clf.fit(train_df,train_y)
     y_pred = clf.predict(test_df)
-    loss = multiclass_log_loss(np.argmax(test_y,axis=1),y_pred)
+    loss = multiclass_log_loss(test_y,y_pred)
     if loss < best:
         n_best = n
         best = loss

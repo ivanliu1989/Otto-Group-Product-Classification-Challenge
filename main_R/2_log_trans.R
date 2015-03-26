@@ -27,3 +27,16 @@ head(train)
 head(test)
 
 save(train,test,file='data/raw_data_log_scale.RData')
+
+### sparse matrix ###
+id <- train$id
+target <- as.factor(train$target)
+train$id <- NULL;train$target <- NULL
+
+train <- apply(train,2,as.factor)
+levels(train[,1])
+dummies <- dummyVars(~., data = train)
+train_sparse <- predict(dummies, newdata = train)
+train <- cbind(id,train_sparse,target)
+colnames(train)
+save(train,file='data/raw_data_sparse.RData')

@@ -2,10 +2,10 @@
 setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
 # setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
-require(caret)
-source('main/2_logloss_func.R')
+require(e1071);require(caret)
+source('main_R/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_multi.RData')
+load(file='data/raw_data_log.RData')
 # load(file='data/raw_data_PCA.RData')
 
 dim(train);set.seed(888)
@@ -26,27 +26,16 @@ trind = 1:length(y)
 teind = (nrow(train)+1):nrow(x)
 dtrain <- x[trind,]
 dtest <- x[teind,]
-# train_df <- train
 
 library(doMC)
 registerDoMC(cores = 2)
-mul_val <- target[-trainIndex,]
-for (n in 1:9){
-    #     n <- 1
-    fitControl <- trainControl(method = "none", number = 10, repeats = 5, classProbs = T, verbose = T)
-    gbmGrid <-  expand.grid(C=1)# bag=T)
-    fit <- train(y=target[trainIndex,n], x=dtrain, method ="svmLinear",# metric ='Kappa', 
-                 trControl = fitControl,do.trace=100, tuneGrid = gbmGrid,
-                 trace=T, preProc = c("center","scale"), verbose=T)#,'pca'
-    val <- predict(fit, newx=dtest,type = "prob")
-    target_df <- target[-trainIndex,n]
-    logloss <- LogLoss(target_df,val)
-    print(paste0(logloss, '\n'))
-    mul_val[,n] <- val
-}
-target_df <- target[-trainIndex,]
-MulLogLoss(target_df,mul_val)
 
+fit <- svm(y=as.factor(y), x=dtrain, scale=T, type='C-classification', kernel='radial', degree=3, gamma=0.001,
+           cost=1,cachesize=1024,tolerance=0.001,epsilon=0.1,shrinking=T,fitted=T,probability=T)
+val <- predict(fit, newx=dtest,type = "prob")
+
+target_df <- target[-trainIndex,]
+MulLogLoss(target_df,val)
 
 ### test ###
 options(scipen=200)

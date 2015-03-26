@@ -63,9 +63,9 @@ test_y = encoder.fit_transform(test_y)
 train_y = encoder.fit_transform(train_y)
 
 best = 10.    
-for n in [0.01,0.1,1,10,100]:
+for n in [2**-15,2**-13,2**-11,2**-9,2**-7,2**-5,2**-3,2**-1,2,2**3]:
     #clf= svm.LinearSVC(multi_class='crammer_singer',loss='l2',C=1,penalty='l2',tol=1e-4,dual=False,fit_intercept=True,intercept_scaling=1)
-    clf= SVC(C=n, kernel='rbf', degree=3, gamma=0.0, shrinking=True, probability=True, tol=0.001, cache_size=200, verbose=True, max_iter=-1) #coef0=0.0, class_weight=None, random_state=None
+    clf= SVC(C=1, kernel='rbf', degree=3, gamma=n, shrinking=True, probability=True, tol=0.001, cache_size=200, verbose=True, max_iter=-1) #coef0=0.0, class_weight=None, random_state=None
     # ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’    
     clf.fit(train_df,train_y)
     y_pred = clf.predict_proba(test_df)

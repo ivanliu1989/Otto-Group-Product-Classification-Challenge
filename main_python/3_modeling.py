@@ -53,9 +53,9 @@ train_df, test_df, train_y, test_y = train_test_split(train, targets, test_size=
 
 best = 10.
 
-for n in range(5,16):
+for n in range(15,90):
     
-    clf = PLSRegression(n_components=n)
+    clf = PLSRegression(n_components=n, scale=True, tol=1e-06, max_iter=500)
     clf.fit(train_df,train_y)
     y_pred = clf.predict(test_df)
     loss = multiclass_log_loss(np.argmax(test_y,axis=1),y_pred)

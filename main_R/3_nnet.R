@@ -30,10 +30,11 @@ dtest <- x[teind,]
 
 best <- 10
 set.seed(888)
-for (n in c(100,300,500,800,1000)){
-    fit <- nnet(y=y, x=dtrain, size=10, softmax=T, skip=T, decay=0.2, maxit=100, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=150000)
+for (n in c(10,30,100)){
+    fit <- nnet(y=y, x=dtrain, size=10, softmax=T, skip=T, decay=0.2, maxit=n, abstol=1.0e-4, 
+                reltol=1.0e-8, Hess=T, rang=1, MaxNWts=150000)
     # linout, entropy, softmax, censored
-    # rang=1, Hess=T,weights=1, 
+    # Hess=T,weights=1, 
     val <- predict(fit, newdata=dtest,type = "raw")
     target_df <- target[-trainIndex,]
     b <- MulLogLoss(target_df,val)
@@ -42,8 +43,8 @@ for (n in c(100,300,500,800,1000)){
     print(paste0("parameter: ",n," | Score: ",b,s))
 }
 # decay c(0.2,0.4,0.6,0.8,1) | 0.2
-# size c(3,10,30,100,150,200,300,500)
-# maxit c(100,300,500,800,1000)
+# size c(3,10,30,100,150,200,300,500) | 300
+# maxit c(100,300,500,800,1000) 
 
 ### validation ###
 varImpPlot(fit)

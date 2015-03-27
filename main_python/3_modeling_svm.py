@@ -81,8 +81,8 @@ for n in [0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5]:
 # C <- [2^-5,2^-3,2^-1,2,2^3,2^5,2^7,2^9,2^11,2^13,2^15] # lose grid => fine grid
 # degree <- [1,2,3]
 # gamma <- [2^-15,2^-13,2^-11,2^-9,2^-7,2^-5,2^-3,2^-1,2,2^3] # lose grid => fine grid
-# C 4000(0.5335)
-# gamma 0.5 (0.5320)
+# C 3800(0.5336)
+# gamma 1.1 (0.5165)
 
 train_df, test_df, train_y, test_y = load_train_data(train_size=1)
 test_x, test_y = load_test_data()

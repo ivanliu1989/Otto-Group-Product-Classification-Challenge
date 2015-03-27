@@ -6,7 +6,7 @@ require(caret);require(nnet);#require(deepnet)
 source('main_R/2_logloss_func.R')
 load(file='data/target.RData');load(file='data/raw_data_log_scale_range_new_feat.RData')
 
-dim(train);set.seed(888);train <- shuffle(train)
+dim(train);set.seed(888);
 # ### pca ###
 # pacFit <- preProcess(train[,-which(names(train) %in% c("id","target"))], method = 'pca')
 # train[,-which(names(train) %in% c("id","target"))] <- predict(pacFit, train[,-which(names(train) %in% c("id","target"))])
@@ -16,7 +16,7 @@ train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train = train_df[,-which(names(train_df) %in% c("id"))] #train
 test = test_df[,-which(names(test_df) %in% c("id"))] #test
-
+train <- shuffle(train)
 dummies <- dummyVars(~target, data = train)
 y <- predict(dummies, newdata = train)
 

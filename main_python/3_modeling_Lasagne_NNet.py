@@ -6,28 +6,32 @@ Created on Fri Mar 27 23:18:38 2015
 """
 import numpy as np
 import pandas as pd
+import lasagne as lg
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
 from lasagne.nonlinearities import softmax
+from lasagne.nonlinearities import rectify
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 
 def load_train_data(path):
     df = pd.read_csv(path)
+    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     np.random.shuffle(X)
     X, labels = X[:, 1:-1].astype(np.float32), X[:, -1]
     encoder = LabelEncoder()
     y = encoder.fit_transform(labels).astype(np.int32)
-    scaler = StandardScaler()
+    scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
     X = scaler.fit_transform(X)
     return X, y, encoder, scaler
     
 def load_test_data(path, scaler):
     df = pd.read_csv(path)
+    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
     X = scaler.transform(X)
@@ -55,17 +59,24 @@ num_features = X.shape[1]
 layers0 = [('input', InputLayer),
            ('dense0', DenseLayer),
            ('dropout', DropoutLayer),
-           ('dense1', DenseLayer),
+           #('dense1', DenseLayer),
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
-                 dense0_num_units=200,
+
+                 dense0_num_units=1000,
+                 dense0_nonlinearity=rectify,
+                 dense0_W=lg.init.Uniform(),
+
                  dropout_p=0.5,
-                 dense1_num_units=200,
+
+                 #dense1_num_units=50,
+                 
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
-                 
+                 output_W=lg.init.Uniform(),
+
                  update=nesterov_momentum,
                  update_learning_rate=0.01,
                  update_momentum=0.9,

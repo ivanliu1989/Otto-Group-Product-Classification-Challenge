@@ -4,7 +4,7 @@ setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(nnet);#require(deepnet)
 source('main_R/2_logloss_func.R')
-load(file='data/target.RData');load(file='data/raw_data_log_scale.RData')
+load(file='data/target.RData');load(file='data/raw_data_log_scale_range.RData')
 
 dim(train);set.seed(888);
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
@@ -27,8 +27,8 @@ dtest <- x[teind,]
 
 best <- 10
 set.seed(888)
-for (n in c(3,10,30,100,150,200,300,500)){
-    fit <- nnet(y=y, x=dtrain, size=n, softmax=T, skip=T, decay=0.2, maxit=100, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=150000)
+for (n in c(100,300,500,800,1000)){
+    fit <- nnet(y=y, x=dtrain, size=30, softmax=T, skip=T, decay=0.2, maxit=n, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=150000)
     # linout, entropy, softmax, censored
     # rang=1, Hess=T,weights=1, 
     val <- predict(fit, newdata=dtest,type = "raw")
@@ -40,7 +40,7 @@ for (n in c(3,10,30,100,150,200,300,500)){
 }
 # decay c(0.2,0.4,0.6,0.8,1) | 0.2
 # size c(3,10,30,100,150,200,300,500)
-# maxit c(100,300,1000)
+# maxit c(100,300,500,800,1000)
 
 ### validation ###
 varImpPlot(fit)

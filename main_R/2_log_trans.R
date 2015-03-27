@@ -19,9 +19,10 @@ save(train,test,file='data/raw_data_log_2.RData')
 load('data/raw_data_log_2.RData')
 
 ### scale ###
+
 all_df <- rbind(train[,-which(names(train) %in% c("id","target"))], test[,-which(names(test) %in% c("id"))])
 dim(train);dim(test);dim(all_df)
-
+# scale(train[,2])
 train[,-which(names(train) %in% c("id","target"))] <- apply(train[,-which(names(train) %in% c("id","target"))],2,rangeScale) 
 test[,-which(names(test) %in% c("id"))] <- apply(test[,-which(names(test) %in% c("id"))],2,rangeScale) 
 head(train)

@@ -54,4 +54,9 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 
 
 # 0.6233329 size=7, decay=0.5, maxit=100
-# 0.594525886065025 size=7, decay=0.2, maxit=100, skip=T
+# 0.594525886065025 decay=0.2, skip=T
+# 0.574993726594771 size=10
+# 0.547326146713043 size=30
+# 0.541909008235634 size=100
+# 0.539160851460031 size=150
+# 0.536541839464396 size=200

@@ -4,15 +4,18 @@ setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(nnet);#require(deepnet)
 source('main_R/2_logloss_func.R')
-load(file='data/target.RData');load(file='data/raw_data_log_scale_range.RData')
+load(file='data/target.RData');load(file='data/raw_data_log_scale_range_new_feat.RData')
 
-dim(train);set.seed(888);
+dim(train);set.seed(888);train <- shuffle(train)
+# ### pca ###
+# pacFit <- preProcess(train[,-which(names(train) %in% c("id","target"))], method = 'pca')
+# train[,-which(names(train) %in% c("id","target"))] <- predict(pacFit, train[,-which(names(train) %in% c("id","target"))])
+### split ###
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train = train_df[,-which(names(train_df) %in% c("id"))] #train
 test = test_df[,-which(names(test_df) %in% c("id"))] #test
-train <- shuffle(train)
 
 dummies <- dummyVars(~target, data = train)
 y <- predict(dummies, newdata = train)
@@ -28,7 +31,7 @@ dtest <- x[teind,]
 best <- 10
 set.seed(888)
 for (n in c(100,300,500,800,1000)){
-    fit <- nnet(y=y, x=dtrain, size=30, softmax=T, skip=T, decay=0.2, maxit=n, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=150000)
+    fit <- nnet(y=y, x=dtrain, size=10, softmax=T, skip=T, decay=0.2, maxit=100, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=150000)
     # linout, entropy, softmax, censored
     # rang=1, Hess=T,weights=1, 
     val <- predict(fit, newdata=dtest,type = "raw")

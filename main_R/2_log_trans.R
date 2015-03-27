@@ -6,6 +6,10 @@ require(caret)
 load(file='data/raw_data_multi.RData')
 source(file='main_R/2_logloss_func.R')
 
+### New features ###
+train$sumNonZero <- apply(train[,2:94],1,function(x) length(which(x==0)))
+test$sumNonZero <- apply(test[,2:94],1,function(x) length(which(x==0)))
+
 ### log transfer ###
 head(train[,-which(names(train) %in% c("id","target"))])
 train[,-which(names(train) %in% c("id","target"))] <- log(1+train[,-which(names(train) %in% c("id","target"))])
@@ -15,8 +19,8 @@ test[,-which(names(test) %in% c("id"))] <- log(1+test[,-which(names(test) %in% c
 
 head(train);head(test)
 
-save(train,test,file='data/raw_data_log_2.RData')
-load('data/raw_data_log_2.RData')
+save(train,test,file='data/raw_data_log_newFeat.RData')
+load('data/raw_data_log_newFeat.RData')
 
 ### scale ###
 all_df <- rbind(train[,-which(names(train) %in% c("id","target"))], test[,-which(names(test) %in% c("id"))])
@@ -30,7 +34,7 @@ test[,-which(names(test) %in% c("id"))] <- all_df[(nrow(train)+1):nrow(all_df),]
 head(train)
 head(test)
 
-save(train,test,file='data/raw_data_log_scale_range.RData')
+save(train,test,file='data/raw_data_log_scale_range_new_feat.RData')
 
 ### sparse matrix ###
 id <- train$id

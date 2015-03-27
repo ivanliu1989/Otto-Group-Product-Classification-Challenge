@@ -1,5 +1,5 @@
 setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge')
-# setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
+setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
 # setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(nnet);#require(deepnet)
@@ -25,13 +25,20 @@ teind = (nrow(train)+1):nrow(x)
 dtrain <- x[trind,]
 dtest <- x[teind,]
 
-fit <- nnet(y=y, x=dtrain, size=7, softmax=T, skip=F, decay=0.5, maxit=200, abstol=1.0e-4, reltol=1.0e-8, MaxNWts=15000)
-# linout, entropy, softmax, censored
-# rang=1, Hess=T,weights=1, 
+best <- 10
+set.seed(888)
+for (n in c(0.2,0.4,0.6,0.8,1)){
+    fit <- nnet(y=y, x=dtrain, size=7, softmax=T, skip=F, decay=n, maxit=100, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=15000)
+    # linout, entropy, softmax, censored
+    # rang=1, Hess=T,weights=1, 
+    val <- predict(fit, newdata=dtest,type = "raw")
+    target_df <- target[-trainIndex,]
+    b <- MulLogLoss(target_df,val)
+    s <- ifelse(b<best,"(*)","")
+    best <- ifelse(b<best,b,best)
+    print(paste0("parameter: ",n," | Score: ",b,s))
+}
 
-val <- predict(fit, newdata=dtest,type = "raw")
-target_df <- target[-trainIndex,]
-MulLogLoss(target_df,val)
 
 ### validation ###
 varImpPlot(fit)
@@ -44,6 +51,4 @@ submission <- data.table(cbind(id=test$id, res))
 write.csv(submission,file='../first_try_rf.csv',row.names=F)
 
 
-# 0.6609466 'nnet' size=7, decay=1
-# 0.71
-# 0.6233329
+# 0.6233329 size=7, decay=0.5, maxit=100

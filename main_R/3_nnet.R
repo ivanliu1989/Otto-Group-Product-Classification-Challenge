@@ -30,7 +30,7 @@ dtest <- x[teind,]
 
 best <- 10
 set.seed(888)
-for (n in c(10,30,100)){
+for (n in c(100)){
     fit <- nnet(y=y, x=dtrain, size=10, softmax=T, skip=T, decay=0.2, maxit=n, abstol=1.0e-4, 
                 reltol=1.0e-8, Hess=T, rang=1, MaxNWts=150000)
     # linout, entropy, softmax, censored

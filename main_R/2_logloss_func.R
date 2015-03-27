@@ -30,4 +30,7 @@ shuffle <- function(sf){
     return (sf)
 }
     
+rangeScale <- function(x){
+    (x-min(x))/(max(x)-min(x))
+}
 

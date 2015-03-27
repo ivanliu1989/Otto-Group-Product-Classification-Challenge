@@ -22,3 +22,11 @@ ensem_prob = data.frame(1:nrow(ensem_prob),ensem_prob[,-1])
 names(ensem_prob) = c('id', paste0('Class_',1:9))
 head(ensem_prob)
 write.csv(ensem_prob,file='../ensemble_xgboost_rf.csv', quote=FALSE,row.names=FALSE)
+
+#######
+result1 <- data.frame(fread('../benchmark_svm.csv',header = T, stringsAsFactor = F))
+result2 <- data.frame(fread('../submission_max_17.csv',header = T, stringsAsFactor = F))
+
+result <- result1
+result[,2:10] <- result1[,2:10]*0.3 + result2[,2:10]*0.7
+write.csv(result,file='../ensemble_xgboost_svm.csv', quote=FALSE,row.names=FALSE)

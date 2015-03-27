@@ -4,11 +4,11 @@ setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Produc
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 
-tot_round <- 50
+tot_round <- 20
 for (i in 1:tot_round){
     
     set.seed((9+i*8)) #<<============#
-    source('main/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_multi.RData')
+    source('main_R/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_newFeat.RData')
     
     train <- shuffle(train) #<<============#
     train = train[,-which(names(train) %in% c("id"))]
@@ -31,7 +31,7 @@ for (i in 1:tot_round){
                   "eval_metric" = "mlogloss", 
                   "nthread" = 2, set.seed = (9+i*8), eta=0.05, gamma = 0.05, #<<============#
                   "num_class" = 9, max.depth=8, min_child_weight=4,
-                  subsample=0.8, colsample_bytree = runif(1,0.85,0.95))
+                  subsample=0.8, colsample_bytree = 0.9)
     cv.nround = 668
     
     ### Train the model ###
@@ -42,7 +42,7 @@ for (i in 1:tot_round){
     pred = matrix(pred,9,length(pred)/9)
     pred = t(pred)
     
-    save(pred, file=paste0('../xgboost_pred',(53+i),'.RData')) #<<============#
+    save(pred, file=paste0('../xgboost_pred',(800+i),'.RData')) #<<============#
 
 }
 

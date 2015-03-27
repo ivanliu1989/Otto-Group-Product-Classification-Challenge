@@ -9,6 +9,7 @@ source(file='main_R/2_logloss_func.R')
 ### New features ###
 train$sumNonZero <- apply(train[,2:94],1,function(x) length(which(x==0)))
 test$sumNonZero <- apply(test[,2:94],1,function(x) length(which(x==0)))
+save(train,test,file='data/raw_data_newFeat.RData')
 
 ### log transfer ###
 head(train[,-which(names(train) %in% c("id","target"))])

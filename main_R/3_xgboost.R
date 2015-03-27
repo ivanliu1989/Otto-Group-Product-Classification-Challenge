@@ -3,12 +3,12 @@ setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');
 setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
-source('main_R/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_log_newFeat.RData')
+source('main_R/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_newFeat.RData')
 
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
-train_df <- shuffle(train_df) #<<============#
+train <- shuffle(train) #<<============#
 train = train_df[,-which(names(train) %in% c("id"))] #train
 test = test_df[,-which(names(test) %in% c("id"))] #test
 
@@ -28,8 +28,8 @@ dtest <- data.matrix(x[teind,])
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
               "nthread" = 2, set.seed = 168, eta=0.05, gamma = 0.05, #<<============#
-              "num_class" = 9, max.depth=8, min_child_weight=1,
-              subsample=0.8, colsample_bytree = 1)
+              "num_class" = 9, max.depth=8, min_child_weight=4,
+              subsample=0.8, colsample_bytree = 0.9)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
@@ -82,6 +82,7 @@ write.csv(pred_ensemble,file='submission_max_17.csv', quote=FALSE,row.names=FALS
 
 # 0.4699977 min_child_weight = 4
 # 0.4764768 1
+# 0.4685496 min=4, 0.8, 0.9, new_feat
 
 # 0.4673917 avg 2
 # 0.4376464 max 2

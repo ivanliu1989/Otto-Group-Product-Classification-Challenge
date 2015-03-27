@@ -19,16 +19,18 @@ save(train,test,file='data/raw_data_log_2.RData')
 load('data/raw_data_log_2.RData')
 
 ### scale ###
-
 all_df <- rbind(train[,-which(names(train) %in% c("id","target"))], test[,-which(names(test) %in% c("id"))])
 dim(train);dim(test);dim(all_df)
 # scale(train[,2])
-train[,-which(names(train) %in% c("id","target"))] <- apply(train[,-which(names(train) %in% c("id","target"))],2,rangeScale) 
-test[,-which(names(test) %in% c("id"))] <- apply(test[,-which(names(test) %in% c("id"))],2,rangeScale) 
+all_df <- apply(all_df,2,rangeScale) 
+all_df <- apply(all_df,2,center_scale) 
+
+train[,-which(names(train) %in% c("id","target"))] <- all_df[1:nrow(train),]
+test[,-which(names(test) %in% c("id"))] <- all_df[(nrow(train)+1):nrow(all_df),]
 head(train)
 head(test)
 
-save(train,test,file='data/raw_data_log_scale.RData')
+save(train,test,file='data/raw_data_log_scale_range.RData')
 
 ### sparse matrix ###
 id <- train$id

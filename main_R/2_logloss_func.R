@@ -34,3 +34,6 @@ rangeScale <- function(x){
     (x-min(x))/(max(x)-min(x))
 }
 
+center_scale <- function(x) {
+    scale(x, scale = FALSE)
+}

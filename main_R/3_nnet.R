@@ -27,8 +27,8 @@ dtest <- x[teind,]
 
 best <- 10
 set.seed(888)
-for (n in c(0.2,0.4,0.6,0.8,1)){
-    fit <- nnet(y=y, x=dtrain, size=7, softmax=T, skip=F, decay=n, maxit=100, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=15000)
+for (n in c(3,10,30,100,150,200,300,500)){
+    fit <- nnet(y=y, x=dtrain, size=n, softmax=T, skip=T, decay=0.2, maxit=100, abstol=1.0e-4, reltol=1.0e-8, rang=1, MaxNWts=150000)
     # linout, entropy, softmax, censored
     # rang=1, Hess=T,weights=1, 
     val <- predict(fit, newdata=dtest,type = "raw")
@@ -38,7 +38,9 @@ for (n in c(0.2,0.4,0.6,0.8,1)){
     best <- ifelse(b<best,b,best)
     print(paste0("parameter: ",n," | Score: ",b,s))
 }
-
+# decay c(0.2,0.4,0.6,0.8,1) | 0.2
+# size c(3,10,30,100,150,200,300,500)
+# maxit c(100,300,1000)
 
 ### validation ###
 varImpPlot(fit)
@@ -52,3 +54,4 @@ write.csv(submission,file='../first_try_rf.csv',row.names=F)
 
 
 # 0.6233329 size=7, decay=0.5, maxit=100
+# 0.594525886065025 size=7, decay=0.2, maxit=100, skip=T

@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 np.random.seed(888)
@@ -31,7 +31,7 @@ def load_test_data(path=None, log=True, scale=True):
     if log:
         df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     if scale:
-        min_max_scaler = MinMaxScaler()
+        min_max_scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
         df.ix[:,1:94] = min_max_scaler.fit_transform(df.ix[:,1:94])
     X = df.values
     X_test, ids = X[:, 1:], X[:, 0]
@@ -45,7 +45,7 @@ def load_train_data(path=None, train_size=0.7, log=True, scale=True, shuffle=Tru
     if log:
         df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     if scale:
-        min_max_scaler = MinMaxScaler()
+        min_max_scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
         df.ix[:,1:94] = min_max_scaler.fit_transform(df.ix[:,1:94])
     X = df.values.copy()
     if shuffle:

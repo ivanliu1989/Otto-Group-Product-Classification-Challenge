@@ -58,6 +58,7 @@ num_features = X.shape[1]
 
 pca = PCA()
 X = pca.fit_transform(X)
+X_test = pca.fit_transform(X_test)
 
 # Train
 layers0 = [('input', InputLayer),
@@ -79,13 +80,13 @@ net0 = NeuralNet(layers=layers0,
 
                  dropout0_p=0.5,
 
-                 dense1_num_units=243,
+                 dense1_num_units=343,
                  dense1_nonlinearity=leaky_rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
-                 dense2_num_units=81,
+                 dense2_num_units=181,
                  dense2_nonlinearity=leaky_rectify,
                  dense2_W=lg.init.Uniform(),
                  
@@ -98,7 +99,7 @@ net0 = NeuralNet(layers=layers0,
                  update_momentum=theano.shared(float32(0.9)),
                  
                  on_epoch_finished=[
-                        AdjustVariable('update_learning_rate', start=0.02, stop=0.0001),
+                        AdjustVariable('update_learning_rate', start=0.03, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
                         EarlyStopping(patience=30)
                         ],

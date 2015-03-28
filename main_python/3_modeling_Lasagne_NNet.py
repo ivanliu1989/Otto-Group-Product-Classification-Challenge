@@ -12,10 +12,15 @@ from sklearn.preprocessing import StandardScaler
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
+from lasagne.layers import Conv2DLayer
+from lasagne.layers import MaxPool2DLayer
 from lasagne.nonlinearities import softmax
 from lasagne.nonlinearities import rectify
+from lasagne.nonlinearities import tanh
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
+#from learning_rate import AdjustVariable
+#from early_stopping import EarlyStopping, EarlyStoppingNoValidation
 
 def load_train_data(path):
     df = pd.read_csv(path)
@@ -53,6 +58,7 @@ num_features = X.shape[1]
 
 # Train
 layers0 = [('input', InputLayer),
+           
            ('dense0', DenseLayer),
            ('dropout0', DropoutLayer),
            ('dense1', DenseLayer),
@@ -67,13 +73,13 @@ net0 = NeuralNet(layers=layers0,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
-                 dropout0_p=0.5,
+                 dropout0_p=0.1,
 
                  dense1_num_units=243,
                  dense1_nonlinearity=rectify,
                  dense1_W=lg.init.Uniform(),
 
-                 dropout1_p=0.5,
+                 dropout1_p=0.2,
                  
                  dense2_num_units=81,
                  dense2_nonlinearity=rectify,
@@ -83,11 +89,16 @@ net0 = NeuralNet(layers=layers0,
                  output_nonlinearity=softmax,
                  output_W=lg.init.Uniform(),
 
+                 #on_epoch_finished=[
+                 #       AdjustVariable('update_learning_rate', start=0.03, stop=0.0001),
+                 #       AdjustVariable('update_momentum', start=0.9, stop=0.999),
+                 #       EarlyStopping(patience=200),
+                 #       ],
                  update=nesterov_momentum,
                  update_learning_rate=0.01,
                  update_momentum=0.9,
                  
-                 eval_size=0.1,
+                 eval_size=0.2,
                  verbose=1,
                  max_epochs=50)
                  

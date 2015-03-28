@@ -12,15 +12,13 @@ from sklearn.preprocessing import StandardScaler
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
-from lasagne.layers import Conv2DLayer
-from lasagne.layers import MaxPool2DLayer
 from lasagne.nonlinearities import softmax
 from lasagne.nonlinearities import rectify
 from lasagne.nonlinearities import tanh
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
-#from learning_rate import AdjustVariable
-#from early_stopping import EarlyStopping, EarlyStoppingNoValidation
+from adjust_variable import AdjustVariable
+from early_stopping import EarlyStopping
 
 def load_train_data(path):
     df = pd.read_csv(path)
@@ -70,19 +68,19 @@ net0 = NeuralNet(layers=layers0,
                  input_shape=(None, num_features),
                  
                  dense0_num_units=726,
-                 dense0_nonlinearity=rectify,
+                 dense0_nonlinearity=softmax,
                  dense0_W=lg.init.Uniform(),
 
-                 dropout0_p=0.1,
+                 dropout0_p=0.3,
 
                  dense1_num_units=243,
-                 dense1_nonlinearity=rectify,
+                 dense1_nonlinearity=softmax,
                  dense1_W=lg.init.Uniform(),
 
-                 dropout1_p=0.2,
+                 dropout1_p=0.5,
                  
                  dense2_num_units=81,
-                 dense2_nonlinearity=rectify,
+                 dense2_nonlinearity=softmax,
                  dense2_W=lg.init.Uniform(),
                  
                  output_num_units=num_classes,

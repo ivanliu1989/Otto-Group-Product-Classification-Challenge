@@ -5,7 +5,7 @@ rm(list=ls());gc()
 library(h2o);library(caret)
 source('main_R/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_sparse.RData') # raw_data_log_scale.RData
+load(file='data/raw_data_newFeat.RData') # raw_data_log_scale.RData
 
 localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
 # h2o.clusterInfo(localH2O)
@@ -25,17 +25,17 @@ dependent <- "target"
 #                shrinkage = 0.05, distribution= "multinomial")
 # n.bins, balance.classes, n.minobsinnode = 2, 
 
-fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
-                        classification=T,activation="TanhWithDropout",#TanhWithDropout Rectifier
-                        input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0,0,0),seed=8,
-                        hidden=c(100,90,20),epochs=1,variable_importances=F,rate_decay=0.66,rate=0.1,
-                        override_with_best_model=T,loss='CrossEntropy',nesterov_accelerated_gradient=T,
-                        l2=3e-6,shuffle_training_data=T,max_w2=4, epsilon = 1e-10, rho = 0.99)
+# fit <- h2o.deeplearning(y = dependent, x = independent, data = train_df, 
+#                         classification=T,activation="TanhWithDropout",#TanhWithDropout Rectifier
+#                         input_dropout_ratio = 0.2,hidden_dropout_ratios = c(0,0,0),seed=8,
+#                         hidden=c(100,90,20),epochs=1,variable_importances=F,rate_decay=0.66,rate=0.1,
+#                         override_with_best_model=T,loss='CrossEntropy',nesterov_accelerated_gradient=T,
+#                         l2=3e-6,shuffle_training_data=T,max_w2=4, epsilon = 1e-10, rho = 0.99)
 # ,nfolds=10,, train_samples_per_iteration = -2,l1=1e-5, 
 
-# fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, type = "BigData",
-#                         classification=T, ntree=5000, depth=30, mtries=30,
-#                         sample.rate=0.8, nbins = 30, seed=8,verbose=T)
+fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, type = "BigData",
+                        classification=T, ntree=5000, depth=30, mtries=30,
+                        sample.rate=0.8, nbins = 30, seed=8,verbose=T)
 # nodesize=10, validation=
 
 pred <- h2o.predict(object = fit, newdata = test_df)

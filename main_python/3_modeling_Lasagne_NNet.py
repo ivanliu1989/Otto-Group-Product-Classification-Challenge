@@ -63,13 +63,13 @@ layers0 = [('input', InputLayer),
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
                  
-                 dense0_num_units=81,
+                 dense0_num_units=726,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.5,
 
-                 dense1_num_units=81,
+                 dense1_num_units=243,
                  dense1_nonlinearity=rectify,
                  dense1_W=lg.init.Uniform(),
 
@@ -78,8 +78,6 @@ net0 = NeuralNet(layers=layers0,
                  dense2_num_units=81,
                  dense2_nonlinearity=rectify,
                  dense2_W=lg.init.Uniform(),
-
-                 #dropout2_p=0.5,
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
@@ -89,7 +87,7 @@ net0 = NeuralNet(layers=layers0,
                  update_learning_rate=0.01,
                  update_momentum=0.9,
                  
-                 eval_size=0.2,
+                 eval_size=0.1,
                  verbose=1,
                  max_epochs=50)
                  

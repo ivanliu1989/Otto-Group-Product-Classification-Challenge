@@ -4,11 +4,12 @@ Created on Sat Mar 28 23:24:51 2015
 
 @author: Ivan
 """
+import numpy
 
 class EarlyStopping(object):
     def __init__(self, patience=100):
         self.patience = patience
-        self.best_valid = np.inf
+        self.best_valid = numpy.inf
         self.best_valid_epoch = 0
         self.best_weights = None
 

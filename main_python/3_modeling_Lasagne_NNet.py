@@ -4,9 +4,11 @@ Created on Fri Mar 27 23:18:38 2015
 
 @author: Ivan
 """
+import theano
 import numpy as np
 import pandas as pd
 import lasagne as lg
+from util import float32
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from lasagne.layers import DenseLayer
@@ -68,33 +70,34 @@ net0 = NeuralNet(layers=layers0,
                  input_shape=(None, num_features),
                  
                  dense0_num_units=726,
-                 dense0_nonlinearity=softmax,
+                 dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.3,
 
                  dense1_num_units=243,
-                 dense1_nonlinearity=softmax,
+                 dense1_nonlinearity=rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
                  dense2_num_units=81,
-                 dense2_nonlinearity=softmax,
+                 dense2_nonlinearity=rectify,
                  dense2_W=lg.init.Uniform(),
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
                  output_W=lg.init.Uniform(),
 
-                 #on_epoch_finished=[
-                 #       AdjustVariable('update_learning_rate', start=0.03, stop=0.0001),
-                 #       AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                 #       EarlyStopping(patience=200),
-                 #       ],
                  update=nesterov_momentum,
-                 update_learning_rate=0.01,
-                 update_momentum=0.9,
+                 update_learning_rate=theano.shared(float32(0.01)),
+                 update_momentum=theano.shared(float32(0.9)),
+                 
+                 on_epoch_finished=[
+                        AdjustVariable('update_learning_rate', start=0.03, stop=0.0001),
+                        AdjustVariable('update_momentum', start=0.9, stop=0.999),
+                        EarlyStopping(patience=200)
+                        ],
                  
                  eval_size=0.2,
                  verbose=1,

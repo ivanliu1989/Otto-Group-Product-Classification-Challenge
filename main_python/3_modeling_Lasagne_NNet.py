@@ -68,19 +68,19 @@ layers0 = [('input', InputLayer),
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
                  
-                 dense0_num_units=200,
+                 dense0_num_units=726,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.5,
 
-                 dense1_num_units=150,
+                 dense1_num_units=243,
                  dense1_nonlinearity=rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
-                 dense2_num_units=100,
+                 dense2_num_units=81,
                  dense2_nonlinearity=rectify,
                  dense2_W=lg.init.Uniform(),
 
@@ -91,7 +91,7 @@ net0 = NeuralNet(layers=layers0,
                  output_W=lg.init.Uniform(),
 
                  update=nesterov_momentum,
-                 update_learning_rate=0.03,
+                 update_learning_rate=0.01,
                  update_momentum=0.9,
                  
                  eval_size=0.2,
@@ -99,6 +99,8 @@ net0 = NeuralNet(layers=layers0,
                  max_epochs=100)
                  
 net0.fit(X, y)
+# 0.489205 200 0.5 150 0.5 100 0.01
+# 0.480746 320 0.5 160 0.5 80 0.01
 
 # Submission 
 make_submission(net0, X_test, ids, encoder)

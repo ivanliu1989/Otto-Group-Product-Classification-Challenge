@@ -20,6 +20,7 @@ from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
 from early_stopping import EarlyStopping
+from sklearn.decomposition import PCA
 
 def load_train_data(path):
     df = pd.read_csv(path)
@@ -54,6 +55,9 @@ X, y, encoder, scaler = load_train_data('../../train.csv')
 X_test, ids = load_test_data('../../test.csv', scaler)
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
+
+pca = PCA()
+X = pca.fit_transform(X)
 
 # Train
 layers0 = [('input', InputLayer),
@@ -96,10 +100,10 @@ net0 = NeuralNet(layers=layers0,
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.02, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=50)
+                        EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.2,
+                 eval_size=0.1,
                  verbose=1,
                  max_epochs=500)
                  

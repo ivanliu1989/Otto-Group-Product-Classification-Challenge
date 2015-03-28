@@ -19,7 +19,7 @@ from nolearn.lasagne import NeuralNet
 
 def load_train_data(path):
     df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    df.ix[:,1:95] = df.ix[:,1:95].apply(np.log1p)
     X = df.values.copy()
     np.random.shuffle(X)
     X, labels = X[:, 1:-1].astype(np.float32), X[:, -1]
@@ -31,7 +31,7 @@ def load_train_data(path):
     
 def load_test_data(path, scaler):
     df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    df.ix[:,1:95] = df.ix[:,1:95].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
     X = scaler.transform(X)
@@ -39,19 +39,15 @@ def load_test_data(path, scaler):
     
 def make_submission(clf, X_test, ids, encoder, name='my_neural_net_submission.csv'):
     y_prob = clf.predict_proba(X_test)
-    with open(name, 'w') as f:
-        f.write('id,')
-        f.write(','.join(encoder.classes_))
-        f.write('\n')
-        for id, probs in zip(ids, y_prob):
-            probas = ','.join([id] + map(str, probs.tolist()))
-            f.write(probas)
-            f.write('\n')
+    submission = pd.read_csv('../data/sampleSubmission.csv')
+    submission.set_index('id', inplace=True)
+    submission[:] = y_prob
+    submission.to_csv(name)
     print("Wrote submission to file {}.".format(name))
 
 # Load Data    
-X, y, encoder, scaler = load_train_data('../../train.csv')
-X_test, ids = load_test_data('../../test.csv', scaler)
+X, y, encoder, scaler = load_train_data('../../train_new.csv')
+X_test, ids = load_test_data('../../test_new.csv', scaler)
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
 
@@ -62,25 +58,24 @@ layers0 = [('input', InputLayer),
            ('dense1', DenseLayer),
            ('dropout1', DropoutLayer),
            ('dense2', DenseLayer),
-           #('dropout2', DropoutLayer),
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
                  
-                 dense0_num_units=726,
+                 dense0_num_units=526,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.5,
 
-                 dense1_num_units=243,
+                 dense1_num_units=563,
                  dense1_nonlinearity=rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
-                 dense2_num_units=81,
+                 dense2_num_units=482,
                  dense2_nonlinearity=rectify,
                  dense2_W=lg.init.Uniform(),
 
@@ -96,11 +91,13 @@ net0 = NeuralNet(layers=layers0,
                  
                  eval_size=0.2,
                  verbose=1,
-                 max_epochs=100)
+                 max_epochs=48)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01
 # 0.480746 320 0.5 160 0.5 80 0.01
+# 0.476469 726 0.5 243 0.5 81 0.01 (50)
+# 0.472083 726 0.5 363 0.5 182 0.01 (47)
 
 # Submission 
 make_submission(net0, X_test, ids, encoder)

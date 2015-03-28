@@ -7,8 +7,14 @@ load(file='data/raw_data_multi.RData')
 source(file='main_R/2_logloss_func.R')
 
 ### New features ###
-train$sumNonZero <- apply(train[,2:94],1,function(x) length(which(x==0)))
+train[,96] <- train$target
+train[,95] <- apply(train[,2:94],1,function(x) length(which(x==0)))
+names(train) <- c('id',paste0('feat_',1:93),'sumNonZero','target')
 test$sumNonZero <- apply(test[,2:94],1,function(x) length(which(x==0)))
+
+write.csv(train,file='../train_new.csv',row.names=F)
+write.csv(test,file='../test_new.csv',row.names=F)
+
 save(train,test,file='data/raw_data_newFeat.RData')
 
 ### log transfer ###

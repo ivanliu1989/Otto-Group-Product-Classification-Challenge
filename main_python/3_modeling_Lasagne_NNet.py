@@ -58,27 +58,40 @@ num_features = X.shape[1]
 # Train
 layers0 = [('input', InputLayer),
            ('dense0', DenseLayer),
-           ('dropout', DropoutLayer),
-           #('dense1', DenseLayer),
+           ('dropout0', DropoutLayer),
+           ('dense1', DenseLayer),
+           ('dropout1', DropoutLayer),
+           ('dense2', DenseLayer),
+           #('dropout2', DropoutLayer),
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
-
-                 dense0_num_units=1000,
+                 
+                 dense0_num_units=200,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
-                 dropout_p=0.5,
+                 dropout0_p=0.5,
 
-                 #dense1_num_units=50,
+                 dense1_num_units=150,
+                 dense1_nonlinearity=rectify,
+                 dense1_W=lg.init.Uniform(),
+
+                 dropout1_p=0.5,
+                 
+                 dense2_num_units=100,
+                 dense2_nonlinearity=rectify,
+                 dense2_W=lg.init.Uniform(),
+
+                 #dropout2_p=0.5,
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
                  output_W=lg.init.Uniform(),
 
                  update=nesterov_momentum,
-                 update_learning_rate=0.01,
+                 update_learning_rate=0.03,
                  update_momentum=0.9,
                  
                  eval_size=0.2,

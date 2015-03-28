@@ -64,6 +64,7 @@ layers0 = [('input', InputLayer),
            ('dense1', DenseLayer),
            ('dropout1', DropoutLayer),
            ('dense2', DenseLayer),
+
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
@@ -73,7 +74,7 @@ net0 = NeuralNet(layers=layers0,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
-                 dropout0_p=0.3,
+                 dropout0_p=0.5,
 
                  dense1_num_units=243,
                  dense1_nonlinearity=rectify,
@@ -94,20 +95,20 @@ net0 = NeuralNet(layers=layers0,
                  update_momentum=theano.shared(float32(0.9)),
                  
                  on_epoch_finished=[
-                        AdjustVariable('update_learning_rate', start=0.03, stop=0.0001),
+                        AdjustVariable('update_learning_rate', start=0.02, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=200)
+                        EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.2,
+                 eval_size=0.1,
                  verbose=1,
-                 max_epochs=50)
+                 max_epochs=1000)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01
 # 0.480746 320 0.5 160 0.5 80 0.01
 # 0.476469 726 0.5 243 0.5 81 0.01 (50)
 # 0.472083 726 0.5 363 0.5 182 0.01 (47)
-
+# 0.467849 726 0.5 243 0.5 81 0.01 (42)(adjustvariable, earlystopping) 
 # Submission 
 make_submission(net0, X_test, ids, encoder)

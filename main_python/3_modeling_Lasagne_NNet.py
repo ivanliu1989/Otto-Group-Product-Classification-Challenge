@@ -19,7 +19,7 @@ from nolearn.lasagne import NeuralNet
 
 def load_train_data(path):
     df = pd.read_csv(path)
-    df.ix[:,1:95] = df.ix[:,1:95].apply(np.log1p)
+    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     np.random.shuffle(X)
     X, labels = X[:, 1:-1].astype(np.float32), X[:, -1]
@@ -31,7 +31,7 @@ def load_train_data(path):
     
 def load_test_data(path, scaler):
     df = pd.read_csv(path)
-    df.ix[:,1:95] = df.ix[:,1:95].apply(np.log1p)
+    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
     X = scaler.transform(X)
@@ -46,8 +46,8 @@ def make_submission(clf, X_test, ids, encoder, name='my_neural_net_submission.cs
     print("Wrote submission to file {}.".format(name))
 
 # Load Data    
-X, y, encoder, scaler = load_train_data('../../train_new.csv')
-X_test, ids = load_test_data('../../test_new.csv', scaler)
+X, y, encoder, scaler = load_train_data('../../train.csv')
+X_test, ids = load_test_data('../../test.csv', scaler)
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
 
@@ -63,19 +63,19 @@ layers0 = [('input', InputLayer),
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
                  
-                 dense0_num_units=526,
+                 dense0_num_units=81,
                  dense0_nonlinearity=rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.5,
 
-                 dense1_num_units=563,
+                 dense1_num_units=81,
                  dense1_nonlinearity=rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
-                 dense2_num_units=482,
+                 dense2_num_units=81,
                  dense2_nonlinearity=rectify,
                  dense2_W=lg.init.Uniform(),
 
@@ -91,7 +91,7 @@ net0 = NeuralNet(layers=layers0,
                  
                  eval_size=0.2,
                  verbose=1,
-                 max_epochs=48)
+                 max_epochs=50)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01

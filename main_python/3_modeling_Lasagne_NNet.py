@@ -96,12 +96,12 @@ net0 = NeuralNet(layers=layers0,
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.02, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=30)
+                        EarlyStopping(patience=50)
                         ],
                  
                  eval_size=0.2,
                  verbose=1,
-                 max_epochs=100)
+                 max_epochs=500)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01

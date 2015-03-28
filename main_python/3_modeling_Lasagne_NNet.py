@@ -15,8 +15,7 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
 from lasagne.nonlinearities import softmax
-from lasagne.nonlinearities import rectify
-from lasagne.nonlinearities import tanh
+from lasagne.nonlinearities import leaky_rectify#rectify
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
@@ -71,19 +70,19 @@ net0 = NeuralNet(layers=layers0,
                  input_shape=(None, num_features),
                  
                  dense0_num_units=726,
-                 dense0_nonlinearity=rectify,
+                 dense0_nonlinearity=leaky_rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.5,
 
                  dense1_num_units=243,
-                 dense1_nonlinearity=rectify,
+                 dense1_nonlinearity=leaky_rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
                  dense2_num_units=81,
-                 dense2_nonlinearity=rectify,
+                 dense2_nonlinearity=leaky_rectify,
                  dense2_W=lg.init.Uniform(),
                  
                  output_num_units=num_classes,
@@ -100,9 +99,9 @@ net0 = NeuralNet(layers=layers0,
                         EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.1,
+                 eval_size=0.2,
                  verbose=1,
-                 max_epochs=1000)
+                 max_epochs=100)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01
@@ -110,5 +109,6 @@ net0.fit(X, y)
 # 0.476469 726 0.5 243 0.5 81 0.01 (50)
 # 0.472083 726 0.5 363 0.5 182 0.01 (47)
 # 0.467849 726 0.5 243 0.5 81 0.01 (42)(adjustvariable, earlystopping) 
+# 0.467454 726 0.5 243 0.5 81 0.01 (37)(adjustvariable, earlystopping)
 # Submission 
 make_submission(net0, X_test, ids, encoder)

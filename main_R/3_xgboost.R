@@ -8,7 +8,7 @@ source('main_R/2_logloss_func.R');load(file='data/target.RData');load(file='data
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
-train <- shuffle(train) #<<============#
+train_df <- shuffle(train_df) #<<============#
 train = train_df[,-which(names(train) %in% c("id"))] #train
 test = test_df[,-which(names(test) %in% c("id"))] #test
 

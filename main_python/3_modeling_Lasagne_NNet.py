@@ -74,19 +74,19 @@ layers0 = [('input', InputLayer),
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
                  
-                 dense0_num_units=726,
+                 dense0_num_units=826,
                  dense0_nonlinearity=leaky_rectify,
                  dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.5,
 
-                 dense1_num_units=343,
+                 dense1_num_units=643,
                  dense1_nonlinearity=leaky_rectify,
                  dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.5,
                  
-                 dense2_num_units=181,
+                 dense2_num_units=100,
                  dense2_nonlinearity=leaky_rectify,
                  dense2_W=lg.init.Uniform(),
                  

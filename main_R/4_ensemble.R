@@ -21,7 +21,7 @@ ensem_prob = format(ensem_prob, digits=2,scientific=F) # shrink the size of subm
 ensem_prob = data.frame(1:nrow(ensem_prob),ensem_prob[,-1])
 names(ensem_prob) = c('id', paste0('Class_',1:9))
 head(ensem_prob)
-write.csv(ensem_prob,file='../ensemble_xgboost_nnet.csv', quote=FALSE,row.names=FALSE)
+write.csv(ensem_prob,file='../ensemble_nnet.csv', quote=FALSE,row.names=FALSE)
 
 #######
 result1 <- data.frame(fread('../benchmark_svm.csv',header = T, stringsAsFactor = F))

@@ -99,14 +99,14 @@ net0 = NeuralNet(layers=layers0,
                  update_momentum=theano.shared(float32(0.9)),
                  
                  on_epoch_finished=[
-                        AdjustVariable('update_learning_rate', start=0.03, stop=0.0001),
+                        AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
                         EarlyStopping(patience=30)
                         ],
                  
                  eval_size=0.1,
                  verbose=1,
-                 max_epochs=500)
+                 max_epochs=100)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01

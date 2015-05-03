@@ -61,34 +61,42 @@ X = pca.fit_transform(X)
 X_test = pca.fit_transform(X_test)
 
 # Train
+np.random.seed(8)
+
 layers0 = [('input', InputLayer),
-           
+
+           ('dropoutf', DropoutLayer),
+
            ('dense0', DenseLayer),
            ('dropout0', DropoutLayer),
            ('dense1', DenseLayer),
            ('dropout1', DropoutLayer),
-           ('dense2', DenseLayer),
-
+           #('dense2', DenseLayer),
+           #('dropout2', DropoutLayer),
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
                  input_shape=(None, num_features),
                  
-                 dense0_num_units=826,
+                 dropoutf_p=0.15,
+
+                 dense0_num_units=1000,
                  dense0_nonlinearity=leaky_rectify,
                  dense0_W=lg.init.Uniform(),
 
-                 dropout0_p=0.5,
+                 dropout0_p=0.25,
 
-                 dense1_num_units=643,
+                 dense1_num_units=500,
                  dense1_nonlinearity=leaky_rectify,
                  dense1_W=lg.init.Uniform(),
 
-                 dropout1_p=0.5,
+                 dropout1_p=0.25,
                  
-                 dense2_num_units=100,
-                 dense2_nonlinearity=leaky_rectify,
-                 dense2_W=lg.init.Uniform(),
+                 #dense2_num_units=300,
+                 #dense2_nonlinearity=leaky_rectify,
+                 #dense2_W=lg.init.Uniform(),
+                 
+                 #dropout2_p=0.25,
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
@@ -104,7 +112,7 @@ net0 = NeuralNet(layers=layers0,
                         EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.1,
+                 eval_size=0.2,
                  verbose=1,
                  max_epochs=100)
                  

@@ -56,9 +56,12 @@ X_test, ids = load_test_data('../../test.csv', scaler)
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
 
-#pca = PCA()
-#X = pca.fit_transform(X)
-#X_test = pca.fit_transform(X_test)
+num_rows = X.shape[0]
+Comb = np.append(X, X_test, axis=0)
+pca = PCA()
+Comb = pca.fit_transform(Comb)
+X = Comb[:num_rows,:]
+X_test = Comb[num_rows:,:]
 
 # Train
 np.random.seed(9)
@@ -113,7 +116,7 @@ net0 = NeuralNet(layers=layers0,
                         EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.01,
+                 eval_size=0.1,
                  verbose=1,
                  max_epochs=200)
                  
@@ -128,44 +131,7 @@ net0.fit(X, y)
 # 0.474071 0.15 1000 0.25 500 0.25 (46)
 # 0.430886 0.15 1000 0.25 500 0.25 (44)
 # 0.467751 0.15 1000 0.25 500 0.25 (28)
-
-# Bagging
-import pickle
-
-prob = net0.predict_proba(X[te:])
-neg_log_loss = 0
-for row in range(0,prob.shape[0]):
-neg_log_loss += - math.log(prob[row, y[te+row]]) 
-neg_log_loss /= prob.shape[0] 
-print "%f" % neg_log_loss
-
-fs = 'objs.pickle_ada_1000_500_1'
-
-with open(fs, 'w') as f:
-pickle.dump(prob, f)
-
-# then to bag
-
-fs1 = 'objs.pickle_ada_1000_500_1'
-
-fs2 = 'objs.pickle_ada_1000_500_2'
-
-fs3 = 'objs.pickle_ada_1000_500_3'
-
-with open(fs1) as f:
-
-p1 = pickle.load(f)
-with open(fs2) as f:
-p2 = pickle.load(f)
-with open(fs3) as f:
-p3 = pickle.load(f)
-
-pred =(p1+p2+p3)/3
-neg_log_loss = 0
-for row in range(0,pred.shape[0]):
-neg_log_loss += - math.log(pred[row, y[te+row]]) 
-neg_log_loss /= pred.shape[0] 
-print "%f" % neg_log_loss
+# 0.427678 0.15 800 0.25 500 0.25 300 0.25 (62)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder)
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_pca_0.454.csv')

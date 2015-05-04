@@ -61,7 +61,7 @@ X = pca.fit_transform(X)
 X_test = pca.fit_transform(X_test)
 
 # Train
-np.random.seed(8)
+np.random.seed(9)
 
 layers0 = [('input', InputLayer),
 
@@ -81,14 +81,14 @@ net0 = NeuralNet(layers=layers0,
                  dropoutf_p=0.15,
 
                  dense0_num_units=1000,
-                 dense0_nonlinearity=leaky_rectify,
-                 dense0_W=lg.init.Uniform(),
+                 #dense0_nonlinearity=leaky_rectify,
+                 #dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.25,
 
                  dense1_num_units=500,
-                 dense1_nonlinearity=leaky_rectify,
-                 dense1_W=lg.init.Uniform(),
+                 #dense1_nonlinearity=leaky_rectify,
+                 #dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.25,
                  
@@ -100,11 +100,11 @@ net0 = NeuralNet(layers=layers0,
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
-                 output_W=lg.init.Uniform(),
+                 #output_W=lg.init.Uniform(),
 
-                 update=nesterov_momentum,
+                 #update=nesterov_momentum,
                  update_learning_rate=theano.shared(float32(0.01)),
-                 update_momentum=theano.shared(float32(0.9)),
+                 #update_momentum=theano.shared(float32(0.9)),
                  
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
@@ -112,7 +112,7 @@ net0 = NeuralNet(layers=layers0,
                         EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.01,
+                 eval_size=0.2,
                  verbose=1,
                  max_epochs=160)
                  
@@ -125,7 +125,7 @@ net0.fit(X, y)
 # 0.467454 726 0.5 243 0.5 81 0.01 (37)(adjustvariable, earlystopping)
 
 # 0.474071 0.15 1000 0.25 500 0.25 (46)
-# 0.433223 0.15 1000 0.25 500 0.25 (46)
+# 0.430886 0.15 1000 0.25 500 0.25 (44)
 
 # Bagging
 import pickle

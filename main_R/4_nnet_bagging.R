@@ -3,7 +3,7 @@ rm(list=ls());gc()
 require(caret);require(methods);require(xgboost)
 
 fit1 <- read.csv('../lasagne_nnet_0.433.csv')
-fit2 <- read.csv('../lasagne_nnet_0.475.csv')
+fit2 <- read.csv('../lasagne_nnet_0.465965.csv')
 exist <- read.csv('../submission_max_17.csv')
 
 head(fit1);dim(fit1)

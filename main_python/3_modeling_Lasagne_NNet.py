@@ -56,12 +56,12 @@ X_test, ids = load_test_data('../../test.csv', scaler)
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
 
-num_rows = X.shape[0]
-Comb = np.append(X, X_test, axis=0)
-pca = PCA()
-Comb = pca.fit_transform(Comb)
-X = Comb[:num_rows,:]
-X_test = Comb[num_rows:,:]
+#num_rows = X.shape[0]
+#Comb = np.append(X, X_test, axis=0)
+#pca = PCA()
+#Comb = pca.fit_transform(Comb)
+#X = Comb[:num_rows,:]
+#X_test = Comb[num_rows:,:]
 
 # Train
 np.random.seed(9)
@@ -134,4 +134,4 @@ net0.fit(X, y)
 # 0.427678 0.15 800 0.25 500 0.25 300 0.25 (62)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_pca_0.454.csv')
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_pca_0.470669.csv')

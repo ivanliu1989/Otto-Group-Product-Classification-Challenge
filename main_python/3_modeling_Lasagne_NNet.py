@@ -61,7 +61,7 @@ X = pca.fit_transform(X)
 X_test = pca.fit_transform(X_test)
 
 # Train
-np.random.seed(18)
+np.random.seed(8)
 
 layers0 = [('input', InputLayer),
 
@@ -71,8 +71,8 @@ layers0 = [('input', InputLayer),
            ('dropout0', DropoutLayer),
            ('dense1', DenseLayer),
            ('dropout1', DropoutLayer),
-           ('dense2', DenseLayer),
-           ('dropout2', DropoutLayer),
+          # ('dense2', DenseLayer),
+         #  ('dropout2', DropoutLayer),
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
@@ -80,7 +80,7 @@ net0 = NeuralNet(layers=layers0,
                  
                  dropoutf_p=0.15,
 
-                 dense0_num_units=800,
+                 dense0_num_units=1000,
                  dense0_nonlinearity=leaky_rectify,
                  dense0_W=lg.init.Uniform(),
 
@@ -92,11 +92,11 @@ net0 = NeuralNet(layers=layers0,
 
                  dropout1_p=0.25,
                  
-                 dense2_num_units=300,
-                 dense2_nonlinearity=leaky_rectify,
-                 dense2_W=lg.init.Uniform(),
+                 #dense2_num_units=300,
+                 #dense2_nonlinearity=leaky_rectify,
+                 #dense2_W=lg.init.Uniform(),
                  
-                 dropout2_p=0.25,
+                # dropout2_p=0.25,
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
@@ -112,9 +112,9 @@ net0 = NeuralNet(layers=layers0,
                         EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.2,
+                 eval_size=0.01,
                  verbose=1,
-                 max_epochs=100)
+                 max_epochs=160)
                  
 net0.fit(X, y)
 # 0.489205 200 0.5 150 0.5 100 0.01
@@ -124,7 +124,8 @@ net0.fit(X, y)
 # 0.467849 726 0.5 243 0.5 81 0.01 (42)(adjustvariable, earlystopping) 
 # 0.467454 726 0.5 243 0.5 81 0.01 (37)(adjustvariable, earlystopping)
 
-# 0.474071 0.15 1000 0.25 500 0.25 (40)
+# 0.474071 0.15 1000 0.25 500 0.25 (46)
+# 0.433223 0.15 1000 0.25 500 0.25 (46)
 
 # Bagging
 import pickle

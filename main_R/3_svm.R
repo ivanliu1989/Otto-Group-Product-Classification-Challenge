@@ -1,8 +1,6 @@
-# setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge')
-setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
-# setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
+setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challenge');
 rm(list=ls());gc()
-library(doMC);require(e1071);require(caret)
+require(data.table);library(doMC);require(e1071);require(caret)
 registerDoMC(cores=4)
 source('main_R/2_logloss_func.R')
 load(file='data/target.RData')
@@ -44,5 +42,3 @@ options(scipen=200)
 res <- predict(fit, newdata=test,type = "prob")
 submission <- data.table(cbind(id=test$id, res))
 write.csv(submission,file='../first_try_rf.csv',row.names=F)
-
-# 

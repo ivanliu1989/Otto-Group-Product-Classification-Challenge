@@ -2,10 +2,11 @@ setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challe
 rm(list=ls());gc()
 library(data.table);library(h2o);library(caret)
 source('main_R/2_logloss_func.R')
+load(file='data/target.RData');
 train <- data.frame(fread('../train.csv', header=T, stringsAsFactor = F))
 test <- data.frame(fread('../test.csv', header=T, stringsAsFactor = F))
 
-localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '16g')
+localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
 # h2o.clusterInfo(localH2O)
 # h2o.rm(object= localH2O, keys= "DeepLearning_aa8d890913a2ad4d5f677dcad33849d2_xval2_holdout")
 # h2o.ls(localH2O)
@@ -32,7 +33,7 @@ dependent <- "target"
 # ,nfolds=10,, train_samples_per_iteration = -2,l1=1e-5, 
 
 fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, type = "BigData",
-                        classification=T, ntree=500, depth=30, mtries=30,
+                        classification=T, ntree=800, depth=50, mtries=30,
                         sample.rate=0.8, nbins = 30, seed=8,verbose=T)
 # nodesize=10, validation=
 
@@ -45,7 +46,7 @@ pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
 names(pred_ensemble) = c('id', paste0('Class_',1:9))
 write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=FALSE)
 
-h2o.shutdown(h2oServer)
+h2o.shutdown(localH2O)
 # 0.5186584 gbm
 # 0.5547743 rf mtries=30
 # 0.5400635 rf mtries=22, ntree=2000, depth=80

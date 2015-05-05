@@ -2,11 +2,12 @@
 setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
 # setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
 rm(list=ls());gc()
-require(e1071);require(caret)
+library(doMC);require(e1071);require(caret)
+registerDoMC(cores=4)
 source('main_R/2_logloss_func.R')
 load(file='data/target.RData')
-load(file='data/raw_data_log.RData')
-# load(file='data/raw_data_PCA.RData')
+train <- data.frame(fread('../train.csv', header=T, stringsAsFactor = F))
+test <- data.frame(fread('../test.csv', header=T, stringsAsFactor = F))
 
 dim(train);set.seed(888)
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
@@ -26,9 +27,6 @@ trind = 1:length(y)
 teind = (nrow(train)+1):nrow(x)
 dtrain <- x[trind,]
 dtest <- x[teind,]
-
-library(doMC)
-registerDoMC(cores = 2)
 
 fit <- svm(y=as.factor(y), x=dtrain, scale=T, type='C-classification', kernel='radial', degree=3, gamma=0.5,
            cost=4000,cachesize=1024,tolerance=0.001,epsilon=0.1,shrinking=T,fitted=T,probability=T)

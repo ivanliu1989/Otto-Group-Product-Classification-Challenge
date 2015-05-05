@@ -34,11 +34,11 @@ exist <- as.data.frame(exist)
 
 write.csv(exist,file='../bagging_nnet_14_rowsum.csv', quote=FALSE,row.names=FALSE)
 
-nnet <- data.frame(fread('../nnet_pca_bagging_ 0.43902_3.csv', header=T, stringsAsFactor = F))
-xgb <- data.frame(fread('../submission_max_17_rowsum.csv', header=T, stringsAsFactor = F))
+nnet <- data.frame(fread('../results/bagging_nnet_14_rowsum.csv', header=T, stringsAsFactor = F))
+xgb <- data.frame(fread('../results/submission_max_17_rowsum.csv', header=T, stringsAsFactor = F))
 
 nnet[,2:10] <- (xgb[,2:10] + nnet[,2:10])/2
-write.csv(nnet,file='nnet_pca_xgb_ensemble.csv', quote=FALSE,row.names=FALSE)
+write.csv(nnet,file='../nnet_pca_xgb_ensemble_3.csv', quote=FALSE,row.names=FALSE)
 
 ###############
 ### Bagging ###
@@ -51,16 +51,17 @@ for (file in files){
     result <- data.frame(fread(file,header = T, stringsAsFactor = F))
     for (i in 1:10){
         for (j in 1:nrow(ensem_prob)){
-            ensem_prob[j,i] <- max(result[j,i],ensem_prob[j,i])
+            ensem_prob[j,i] <- sum(result[j,i],ensem_prob[j,i])
         }
     }    
 }
+ensem_prob[,2:10] <- ensem_prob[,2:10] / length(files)
 
 ensem_prob = format(ensem_prob, digits=2,scientific=F) # shrink the size of submission
 ensem_prob = data.frame(1:nrow(ensem_prob),ensem_prob[,-1])
 names(ensem_prob) = c('id', paste0('Class_',1:9))
 head(ensem_prob)
-write.csv(ensem_prob,file='../bagging_nnet_14.csv', quote=FALSE,row.names=FALSE)
+write.csv(ensem_prob,file='../bagging_nnet_14_mean.csv', quote=FALSE,row.names=FALSE)
 
 exist <- data.matrix(ensem_prob)
 class(exist)

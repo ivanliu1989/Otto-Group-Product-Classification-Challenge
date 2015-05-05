@@ -1,13 +1,15 @@
-# setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge')
-setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
-# setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
+setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challenge');
 rm(list=ls());gc()
-require(caret);require(randomForest)
-source('main/2_logloss_func.R')
-load(file='data/target.RData');load(file='data/raw_data_multi.RData')
+require(data.table);require(caret);require(randomForest)
+source('main_R/2_logloss_func.R')
+train <- data.frame(fread('../train.csv', header=T, stringsAsFactor = F))
+test <- data.frame(fread('../test.csv', header=T, stringsAsFactor = F))
+
+library(doMC)
+registerDoMC(cores = 4)
 
 dim(train);set.seed(888)
-trainIndex <- createDataPartition(train[,95], p = .7,list = FALSE)
+trainIndex <- createDataPartition(train$target, p = .8,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 # train_df <- train
 

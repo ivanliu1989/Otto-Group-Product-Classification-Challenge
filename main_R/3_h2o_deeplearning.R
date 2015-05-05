@@ -1,18 +1,16 @@
-setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge');
-setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge');
-setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
+setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challenge');
 rm(list=ls());gc()
-library(h2o);library(caret)
+library(data.table);library(h2o);library(caret)
 source('main_R/2_logloss_func.R')
-load(file='data/target.RData')
-load(file='data/raw_data_newFeat.RData') # raw_data_log_scale.RData
+train <- data.frame(fread('../train.csv', header=T, stringsAsFactor = F))
+test <- data.frame(fread('../test.csv', header=T, stringsAsFactor = F))
 
-localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '8g')
+localH2O <- h2o.init(ip = 'localhost', port = 54321, max_mem_size = '16g')
 # h2o.clusterInfo(localH2O)
 # h2o.rm(object= localH2O, keys= "DeepLearning_aa8d890913a2ad4d5f677dcad33849d2_xval2_holdout")
 # h2o.ls(localH2O)
 train <- data.frame(train)
-trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
+trainIndex <- createDataPartition(train$target, p = .8,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train_df <- as.h2o(localH2O, train_df, key="train")

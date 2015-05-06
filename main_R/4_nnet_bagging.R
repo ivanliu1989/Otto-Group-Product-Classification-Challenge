@@ -36,8 +36,8 @@ write.csv(exist,file='../bagging_nnet_14_rowsum.csv', quote=FALSE,row.names=FALS
 
 nnet <- data.frame(fread('../results/bagging_nnet_14_rowsum.csv', header=T, stringsAsFactor = F))
 xgb <- data.frame(fread('../results/submission_max_17_rowsum.csv', header=T, stringsAsFactor = F))
-
-nnet[,2:10] <- (xgb[,2:10] + nnet[,2:10])/2
+submission <- fread('../results/nnet_pca_xgb_ensemble_2.csv', header=T, stringsAsFactor=F, data.table=F)      
+submission[,2:10] <- (xgb[,2:10] + nnet[,2:10])/2
 write.csv(nnet,file='../nnet_pca_xgb_ensemble_3.csv', quote=FALSE,row.names=FALSE)
 
 ###############

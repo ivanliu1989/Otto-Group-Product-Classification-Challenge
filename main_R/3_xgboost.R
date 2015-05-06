@@ -1,9 +1,11 @@
 setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challenge');
 rm(list=ls());gc()
-require(caret);require(methods);require(xgboost)
-source('main_R/2_logloss_func.R');load(file='data/target.RData');load(file='data/raw_data_newFeat.RData')
+require(caret);require(methods);require(xgboost);require(data.table)
+source('main_R/2_logloss_func.R');load(file='data/target.RData');
+train <- fread('../train.csv', header=T, stringsAsFactor = F,data.table=F)
+test <- fread('../test.csv', header=T, stringsAsFactor = F, data.table=F)
 library(doMC)
-registerDoMC(cores = 4)
+registerDoMC(cores = 2)
 
 trainIndex <- createDataPartition(train$target, p = .7,list = FALSE)
 train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
@@ -27,14 +29,14 @@ dtest <- data.matrix(x[teind,])
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 2, set.seed = 168, eta=0.05, gamma = 0.05, #<<============#
-              "num_class" = 9, max.depth=8, min_child_weight=4,
+              "nthread" = 3, set.seed = 168, eta=0.05, gamma = 0.3, #<<============#
+              "num_class" = 9, max.depth=8, min_child_weight=6,
               subsample=0.8, colsample_bytree = 0.9)
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
 ### Run Cross Valication
-cv.nround = 668
+cv.nround = 868
 # bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
 #                 nrounds=cv.nround,prediction = TRUE)
 

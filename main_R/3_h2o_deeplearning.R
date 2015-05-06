@@ -16,6 +16,7 @@ train_df <- train[trainIndex,];test_df  <- train[-trainIndex,]
 
 train_df <- as.h2o(localH2O, train_df, key="train")
 test_df <- as.h2o(localH2O, test_df, key="test")
+test_raw <- as.h2o(localH2O, test, key="test_raw")
 
 independent <- colnames(train_df[,2:(ncol(train_df)-1)])
 dependent <- "target"
@@ -33,18 +34,19 @@ dependent <- "target"
 # ,nfolds=10,, train_samples_per_iteration = -2,l1=1e-5, 
 
 fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, type = "BigData",
-                        classification=T, ntree=800, depth=50, mtries=30,
+                        classification=T, ntree=1800, depth=50, mtries=30,
                         sample.rate=0.8, nbins = 30, seed=8,verbose=T)
 # nodesize=10, validation=
 
 pred <- h2o.predict(object = fit, newdata = test_df)
+pred <- h2o.predict(object = fit, newdata = test_raw)
 pred_ensemble = format(as.data.frame(pred[,2:10]), digits=2,scientific=F) # shrink the size of submission
 target_df <- target[-trainIndex,]
 MulLogLoss(target_df,data.matrix(pred_ensemble))
 
 pred_ensemble = data.frame(1:nrow(pred_ensemble),pred_ensemble)
 names(pred_ensemble) = c('id', paste0('Class_',1:9))
-write.csv(pred_ensemble,file='../submission_max_047.csv', quote=FALSE,row.names=FALSE)
+write.csv(pred_ensemble,file='../randomforest_0569.csv', quote=FALSE,row.names=FALSE)
 
 h2o.shutdown(localH2O)
 # 0.5186584 gbm

@@ -36,13 +36,13 @@ param <- list("objective" = "multi:softprob",
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
 ### Run Cross Valication
-cv.nround = 868
-# bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
-#                 nrounds=cv.nround,prediction = TRUE)
+cv.nround = 698
+bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
+                nrounds=cv.nround,prediction = TRUE)
 
 ### Train the model ###
 set.seed(168) #<<============#
-bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
+# bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
 
 ### Make prediction ###
 pred = predict(bst,dtest)#, ntreelimit=1

@@ -34,7 +34,7 @@ dependent <- "target"
 # ,nfolds=10,, train_samples_per_iteration = -2,l1=1e-5, 
 
 fit <- h2o.randomForest(y = dependent, x = independent, data = train_df, type = "BigData",
-                        classification=T, ntree=1800, depth=50, mtries=30,
+                        classification=T, ntree=1800, depth=50, mtries=10,
                         sample.rate=0.8, nbins = 30, seed=8,verbose=T)
 # nodesize=10, validation=
 

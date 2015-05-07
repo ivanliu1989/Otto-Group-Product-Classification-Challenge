@@ -27,17 +27,17 @@ dtrain <- x[trind,]
 dtest <- data.matrix(x[teind,])
 
 ### Set necessary parameter ###
-param <- list("objective" = "multi:softprob",
-              "eval_metric" = "mlogloss", 
-              "nthread" = 3, set.seed = 168, eta=0.05, gamma = 0.2, #<<============#
-              "num_class" = 9, max.depth=8, min_child_weight=6,
-              subsample=0.8, colsample_bytree = 0.9)
-
 # param <- list("objective" = "multi:softprob",
 #               "eval_metric" = "mlogloss", 
-#               "nthread" = 3, set.seed = 168, eta=0.05, gamma = 0.3, #<<============#
-#               "num_class" = 9, max.depth=6, min_child_weight=9,
+#               "nthread" = 3, set.seed = 168, eta=0.05, gamma = 0.2, #<<============#
+#               "num_class" = 9, max.depth=, min_child_weight=6,
 #               subsample=0.8, colsample_bytree = 0.9)
+
+param <- list("objective" = "multi:softprob",
+              "eval_metric" = "mlogloss", 
+              "nthread" = 3, set.seed = 168, eta=0.05, gamma = 0.01, #0.05
+              "num_class" = 9, max.depth=6, min_child_weight=5, 
+              subsample=0.7, colsample_bytree = 0.6) #0.8
 # max.depth = 8, eta = 0.05, nround = 668, gamma = 0.05, subsample=0.8, colsample_bytree = 0.9
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 

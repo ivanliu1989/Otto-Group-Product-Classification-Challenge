@@ -75,8 +75,8 @@ for i in range(1,31):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               ('dense2', DenseLayer),
-               ('dropout2', DropoutLayer),
+               #('dense2', DenseLayer),
+               #('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
@@ -84,7 +84,7 @@ for i in range(1,31):
                      
                      dropoutf_p=0.15,
     
-                     dense0_num_units=800,
+                     dense0_num_units=1000,
                      dense0_nonlinearity=leaky_rectify,
                      #dense0_W=lg.init.Uniform(),
     
@@ -96,11 +96,11 @@ for i in range(1,31):
     
                      dropout1_p=0.25,
                      
-                     dense2_num_units=300,
-                     dense2_nonlinearity=leaky_rectify,
+                     #dense2_num_units=300,
+                     #dense2_nonlinearity=leaky_rectify,
                      #dense2_W=lg.init.Uniform(),
                      
-                     dropout2_p=0.25,
+                     #dropout2_p=0.25,
                      
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
@@ -114,10 +114,10 @@ for i in range(1,31):
                      on_epoch_finished=[
                             AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
                             AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                            EarlyStopping(patience=30)
+                            EarlyStopping(patience=20)
                             ],
                      
-                     eval_size=0.1,
+                     eval_size=0.2,
                      verbose=1,
                      max_epochs=200)
                      
@@ -136,4 +136,4 @@ for i in range(1,31):
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65) rectify
     
     # Submission 
-    make_submission(net0, X_test, ids, encoder, name='../../nnet/nnet'+str(i)+'.csv')
+    make_submission(net0, X_test, ids, encoder, name='../../nnet_2/nnet_'+str(i)+'.csv')

@@ -28,6 +28,7 @@ def load_train_data(path):
     train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
     #scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
     #train.ix[:,1:94] = scaler.fit_transform(train.ix[:,1:94])
+    scaler=1
     train = train.values.copy()
     np.random.shuffle(train)
     ids, train, labels, folds = train[:, 0], train[:, 1:-2].astype(np.float32), train[:, -2], train[:, -1]
@@ -64,6 +65,8 @@ X_train, y_train, X_test, y_test, encoder, scaler, testIDS = load_train_data('..
 Test, ids = load_test_data('../../test.csv', scaler)
 num_classes = len(encoder.classes_)
 num_features = X_train.shape[1]
+
+#X_train = np.append(X_train,X_test)
 
 num_rows = X_train.shape[0]
 num_rows_t = X_test.shape[0]
@@ -137,12 +140,12 @@ for i in range(1,31):
     y_prob = net0.predict_proba(X_test)
     score=log_loss(y_test, y_prob)
     
-    names = '../../Team_nnet/Val/testPred_Ivan_nnet2_'+str(i)+'_'+ str(score)+'.csv'
+    names = '../../Team_nnet/Val/valPred_Ivan_nnet2_'+str(i)+'_'+ str(score)+'.csv'
     submission = pd.DataFrame(data=y_prob, index=testIDS)
     submission.to_csv(names)
     print("Wrote submission to file {}.".format(names))
     # Submission 
-    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/valPred_Ivan_nnet2_'+str(i)+'.csv')
+    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_nnet2_'+str(i)+'.csv')
     
     # 0.467751 0.15 1000 0.25 500 0.25 (28)
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)

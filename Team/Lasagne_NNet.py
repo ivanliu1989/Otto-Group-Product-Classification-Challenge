@@ -25,7 +25,7 @@ from sklearn.metrics import log_loss
 
 def load_train_data(path):
     train = pd.read_csv(path)  
-    #train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
+    train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
     #scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
     #train.ix[:,1:94] = scaler.fit_transform(train.ix[:,1:94])
     scaler=1
@@ -46,7 +46,7 @@ def load_train_data(path):
     
 def load_test_data(path, scaler):
     df = pd.read_csv(path)
-    #df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
     #X = scaler.transform(X)
@@ -68,15 +68,15 @@ num_features = X_train.shape[1]
 
 #X_train = np.append(X_train,X_test)
 
-num_rows = X_train.shape[0]
-num_rows_t = X_test.shape[0]
-Comb = np.append(X_train, X_test, axis=0)
-Comb = np.append(Comb, Test, axis=0)
-pca = PCA()
-Comb = pca.fit_transform(Comb)
-X_train = Comb[:num_rows,:]
-X_test = Comb[num_rows:(num_rows_t+num_rows),:]
-Test = Comb[(num_rows_t+num_rows):,:]
+#num_rows = X_train.shape[0]
+#num_rows_t = X_test.shape[0]
+#Comb = np.append(X_train, X_test, axis=0)
+#Comb = np.append(Comb, Test, axis=0)
+#pca = PCA()
+#Comb = pca.fit_transform(Comb)
+#X_train = Comb[:num_rows,:]
+#X_test = Comb[num_rows:(num_rows_t+num_rows),:]
+#Test = Comb[(num_rows_t+num_rows):,:]
 
 # Train
 for i in range(1,31):
@@ -89,8 +89,8 @@ for i in range(1,31):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               ('dense2', DenseLayer),
-               ('dropout2', DropoutLayer),
+               #('dense2', DenseLayer),
+               #('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
@@ -98,7 +98,7 @@ for i in range(1,31):
                      
                      dropoutf_p=0.15,
     
-                     dense0_num_units=800,
+                     dense0_num_units=1000,
                      dense0_nonlinearity=leaky_rectify,
                      #dense0_W=lg.init.Uniform(),
     
@@ -110,11 +110,11 @@ for i in range(1,31):
     
                      dropout1_p=0.25,
                      
-                     dense2_num_units=300,
-                     dense2_nonlinearity=leaky_rectify,
-                     dense2_W=lg.init.Uniform(),
+                     #dense2_num_units=300,
+                     #dense2_nonlinearity=leaky_rectify,
+                     #dense2_W=lg.init.Uniform(),
                      
-                     dropout2_p=0.25,
+                     #dropout2_p=0.25,
                      
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
@@ -126,14 +126,14 @@ for i in range(1,31):
                      update_momentum=theano.shared(float32(0.9)),
                      
                      on_epoch_finished=[
-                            AdjustVariable('update_learning_rate', start=0.1, stop=0.001),
+                            AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
                             AdjustVariable('update_momentum', start=0.9, stop=0.999),
                             EarlyStopping(patience=30)
                             ],
                      
-                     eval_size=0.1,
+                     eval_size=0.2,
                      verbose=1,
-                     max_epochs=100)
+                     max_epochs=200)
                      
     net0.fit(X_train, y_train)
     

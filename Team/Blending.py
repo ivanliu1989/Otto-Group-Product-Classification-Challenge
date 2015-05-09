@@ -12,3 +12,4 @@ onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 
 train = pd.read_csv(path)  
 
+df.sum(1)

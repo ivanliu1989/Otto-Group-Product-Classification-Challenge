@@ -136,4 +136,4 @@ for i in range(1,31):
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65) rectify
     
     # Submission 
-    make_submission(net0, X_test, ids, encoder, name='../../nnet_2/nnet_'+str(i)+'.csv')
+    #make_submission(net0, X_test, ids, encoder, name='../../nnet_2/nnet_'+str(i)+'.csv')

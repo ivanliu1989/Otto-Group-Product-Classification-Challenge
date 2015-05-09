@@ -32,7 +32,7 @@ test <- as.matrix(test)
 dtest = matrix(as.numeric(test),nrow(test),ncol(test))
 
 for (i in 1:30){
-    seeds <- 8 * i
+    seeds <- 9 * i
     set.seed(seeds) #<<============#
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
@@ -52,7 +52,7 @@ for (i in 1:30){
     pred = format(pred, digits=2,scientific=F) # shrink the size of submission
     pred = data.frame(trainIndex,pred)
     names(pred) = c('id', paste0('Class_',1:9))
-    write.csv(pred,file=paste0('../Team_xgb/Val/valPred_Ivan_xgb_',i,'_',score,'.csv'), 
+    write.csv(pred,file=paste0('../Team_xgb/Val/valPred_Ivan_m',i,'CV',score,'_xgb.csv'), 
               quote=FALSE,row.names=FALSE)
     
     ### Make prediction ###
@@ -63,7 +63,7 @@ for (i in 1:30){
     pred = format(pred, digits=2,scientific=F) # shrink the size of submission
     pred = data.frame(1:nrow(pred),pred)
     names(pred) = c('id', paste0('Class_',1:9))
-    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_xgb_',i,'.csv'), 
+    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb.csv'), 
               quote=FALSE,row.names=FALSE)
     print(paste0('Model:',i,' Complete!'))
 }

@@ -15,7 +15,7 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
 from lasagne.nonlinearities import softmax
-from lasagne.nonlinearities import leaky_rectify#rectify
+from lasagne.nonlinearities import leaky_rectify #leaky_rectify#
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
@@ -25,7 +25,7 @@ from sklearn.metrics import log_loss
 
 def load_train_data(path):
     train = pd.read_csv(path)  
-    train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
+    #train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
     #scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
     #train.ix[:,1:94] = scaler.fit_transform(train.ix[:,1:94])
     scaler=1
@@ -46,7 +46,7 @@ def load_train_data(path):
     
 def load_test_data(path, scaler):
     df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    #df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
     #X = scaler.transform(X)
@@ -112,13 +112,13 @@ for i in range(1,31):
                      
                      dense2_num_units=300,
                      dense2_nonlinearity=leaky_rectify,
-                     #dense2_W=lg.init.Uniform(),
+                     dense2_W=lg.init.Uniform(),
                      
                      dropout2_p=0.25,
                      
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
-                     output_W=lg.init.Uniform(),
+                     #output_W=lg.init.Uniform(),
     
                      update=nesterov_momentum,
                      #update=adagrad,
@@ -126,26 +126,26 @@ for i in range(1,31):
                      update_momentum=theano.shared(float32(0.9)),
                      
                      on_epoch_finished=[
-                            AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
+                            AdjustVariable('update_learning_rate', start=0.1, stop=0.001),
                             AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                            EarlyStopping(patience=20)
+                            EarlyStopping(patience=30)
                             ],
                      
                      eval_size=0.1,
                      verbose=1,
-                     max_epochs=200)
+                     max_epochs=100)
                      
     net0.fit(X_train, y_train)
     
     y_prob = net0.predict_proba(X_test)
     score=log_loss(y_test, y_prob)
     
-    names = '../../Team_nnet/Val/valPred_Ivan_nnet2_'+str(i)+'_'+ str(score)+'.csv'
+    names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_CV'+ str(score)+'nnet2.csv'
     submission = pd.DataFrame(data=y_prob, index=testIDS)
     submission.to_csv(names)
     print("Wrote submission to file {}.".format(names))
     # Submission 
-    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_nnet2_'+str(i)+'.csv')
+    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet.csv')
     
     # 0.467751 0.15 1000 0.25 500 0.25 (28)
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)

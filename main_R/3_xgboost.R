@@ -42,7 +42,7 @@ param <- list("objective" = "multi:softprob",
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
 ### Run Cross Valication
-cv.nround = 698
+cv.nround = 668
 # bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
 #                 nrounds=cv.nround,prediction = TRUE)
 

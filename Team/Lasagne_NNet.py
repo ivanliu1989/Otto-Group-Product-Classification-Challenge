@@ -68,15 +68,15 @@ num_features = X_train.shape[1]
 
 #X_train = np.append(X_train,X_test)
 
-num_rows = X_train.shape[0]
-num_rows_t = X_test.shape[0]
-Comb = np.append(X_train, X_test, axis=0)
-Comb = np.append(Comb, Test, axis=0)
-pca = PCA()
-Comb = pca.fit_transform(Comb)
-X_train = Comb[:num_rows,:]
-X_test = Comb[num_rows:(num_rows_t+num_rows),:]
-Test = Comb[(num_rows_t+num_rows):,:]
+#num_rows = X_train.shape[0]
+#num_rows_t = X_test.shape[0]
+#Comb = np.append(X_train, X_test, axis=0)
+#Comb = np.append(Comb, Test, axis=0)
+#pca = PCA()
+#Comb = pca.fit_transform(Comb)
+#X_train = Comb[:num_rows,:]
+#X_test = Comb[num_rows:(num_rows_t+num_rows),:]
+#Test = Comb[(num_rows_t+num_rows):,:]
 
 # Train
 for i in range(1,31):
@@ -140,12 +140,12 @@ for i in range(1,31):
     y_prob = net0.predict_proba(X_test)
     score=log_loss(y_test, y_prob)
     
-    names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_CV'+ str(score)+'_nnet2.csv'
+    names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_CV'+ str(score)+'_nnet3.csv'
     submission = pd.DataFrame(data=y_prob, index=testIDS).sort_index(axis=1)
     submission.to_csv(names)
     print("Wrote submission to file {}.".format(names))
     # Submission 
-    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet2.csv')
+    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet3.csv')
     
     # 0.467751 0.15 1000 0.25 500 0.25 (28)
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)

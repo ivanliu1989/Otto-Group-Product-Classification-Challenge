@@ -36,10 +36,13 @@ for (i in 1:30){
     set.seed(seeds) #<<============#
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
-                  "nthread" = 3, set.seed = seeds, eta=0.05, gamma = 0.01, #0.05
+                  "nthread" = 3, set.seed = seeds, eta=0.05, 
+                  gamma = sample(c(0.01,0.02,0.03,0.04,.05),1), #0.05
                   "num_class" = 9, max.depth=8, min_child_weight=5, 
-                  subsample=0.7, colsample_bytree = 0.6) #0.8
-    cv.nround = 698
+                  subsample=sample(c(0.7,0.75,0.8),1), colsample_bytree = sample(c(0.6,0.7,0.9,0.8),1)) #0.8
+    #0.05, 0.8, 0.9 | 0.01, 0.7, 0.6
+    cv.nround = sample(c(690:710),1)
+    # 698
     
     ### Train the model ###
     bst = xgboost(param=param, data = dtrain, label = y, nround = cv.nround)
@@ -52,7 +55,7 @@ for (i in 1:30){
     pred = format(pred, digits=2,scientific=F) # shrink the size of submission
     pred = data.frame(trainIndex,pred)
     names(pred) = c('id', paste0('Class_',1:9))
-    write.csv(pred,file=paste0('../Team_xgb/Val/valPred_Ivan_m',i,'_CV',score,'_xgb.csv'), 
+    write.csv(pred,file=paste0('../Team_xgb/Val/valPred_Ivan_m',i,'_CV',score,'_xgb2.csv'), 
               quote=FALSE,row.names=FALSE)
     
     ### Make prediction ###
@@ -63,7 +66,7 @@ for (i in 1:30){
     pred = format(pred, digits=2,scientific=F) # shrink the size of submission
     pred = data.frame(1:nrow(pred),pred)
     names(pred) = c('id', paste0('Class_',1:9))
-    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb.csv'), 
+    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb2.csv'), 
               quote=FALSE,row.names=FALSE)
     print(paste0('Model:',i,' Complete!'))
 }

@@ -9,7 +9,7 @@ from os.path import isfile, join
 import numpy as np
 import pandas as pd
 
-mypath='../../Team_xgb/Pred/'
+mypath='../../Team_nnet/Val/'
 onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 onlyfiles = onlyfiles[1:]
 
@@ -19,7 +19,7 @@ for i in range(0,len(onlyfiles)):
     else:        
         train = train + pd.read_csv(mypath+onlyfiles[1])
 
-train = train/len(onlyfiles)
+train = train/len(onlyfiles[1:])
 train.to_csv('xgb_blending_18.csv')
 
 train = train.values.copy()

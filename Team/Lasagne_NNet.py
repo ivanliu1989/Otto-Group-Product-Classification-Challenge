@@ -16,6 +16,7 @@ from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
 from lasagne.nonlinearities import softmax
 from lasagne.nonlinearities import rectify #leaky_rectify#
+from lasagne.nonlinearities import leaky_rectify #leaky_rectify#
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
@@ -68,20 +69,22 @@ num_features = X_train.shape[1]
 
 #X_train = np.append(X_train,X_test)
 
-#num_rows = X_train.shape[0]
-#num_rows_t = X_test.shape[0]
-#Comb = np.append(X_train, X_test, axis=0)
-#Comb = np.append(Comb, Test, axis=0)
-#pca = PCA()
-#Comb = pca.fit_transform(Comb)
-#X_train = Comb[:num_rows,:]
-#X_test = Comb[num_rows:(num_rows_t+num_rows),:]
-#Test = Comb[(num_rows_t+num_rows):,:]
+num_rows = X_train.shape[0]
+num_rows_t = X_test.shape[0]
+Comb = np.append(X_train, X_test, axis=0)
+Comb = np.append(Comb, Test, axis=0)
+pca = PCA()
+scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+Comb = scaler.fit_transform(Comb)
+Comb = pca.fit_transform(Comb)
+X_train = Comb[:num_rows,:]
+X_test = Comb[num_rows:(num_rows_t+num_rows),:]
+Test = Comb[(num_rows_t+num_rows):,:]
 
 # Train
 for i in range(1,31):
     
-    np.random.seed(i*9)
+    np.random.seed(8)
     
     layers0 = [('input', InputLayer),
                ('dropoutf', DropoutLayer),
@@ -89,8 +92,8 @@ for i in range(1,31):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               #('dense2', DenseLayer),
-               #('dropout2', DropoutLayer),
+               ('dense2', DenseLayer),
+               ('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
@@ -98,24 +101,24 @@ for i in range(1,31):
                      
                      dropoutf_p=0.15,
     
-                     dense0_num_units=1000,
-                     dense0_nonlinearity=rectify,
+                     dense0_num_units=800,
+                     dense0_nonlinearity=leaky_rectify,
                      #dense0_W=lg.init.Uniform(),
     
                      dropout0_p=0.25,
     
                      dense1_num_units=500,
-                     dense1_nonlinearity=rectify,
+                     dense1_nonlinearity=leaky_rectify,
                      #dense1_W=lg.init.Uniform(),
     
                      dropout1_p=0.25,
                      
-                     #dense2_num_units=300,
-                     #dense2_nonlinearity=leaky_rectify,
+                     dense2_num_units=300,
+                     dense2_nonlinearity=leaky_rectify,
                      #dense2_W=lg.init.Uniform(),
                      
-                     #dropout2_p=0.25,
-                     
+                     dropout2_p=0.25,
+                    
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
                      #output_W=lg.init.Uniform(),
@@ -128,12 +131,12 @@ for i in range(1,31):
                      on_epoch_finished=[
                             AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
                             AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                            EarlyStopping(patience=20)
+                            EarlyStopping(patience=30)
                             ],
                      
                      eval_size=0.2,
                      verbose=1,
-                     max_epochs=150)
+                     max_epochs=200)
                      
     net0.fit(X_train, y_train)
     

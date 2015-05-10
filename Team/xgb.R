@@ -6,7 +6,7 @@ load(file='data/raw_data_log.RData');
 # train <- fread('../train.csv', header=T, stringsAsFactor = F,data.table=F)
 # test <- fread('../test.csv', header=T, stringsAsFactor = F, data.table=F)
 folds <- fread('data/train_folds.csv', header=T, stringsAsFactor = F, data.table=F)$test_fold
-library(doMC);registerDoMC(cores = 3)
+# library(doMC);registerDoMC(cores = 3)
 # options(scipen=3)
 
 trainIndex <- which(folds == 0)
@@ -32,16 +32,15 @@ test <- as.matrix(test)
 dtest = matrix(as.numeric(test),nrow(test),ncol(test))
 
 for (i in 1:30){
-    seeds <- 9 * i
+    seeds <- 8
     set.seed(seeds) #<<============#
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
-                  "nthread" = 3, set.seed = seeds, eta=0.05, 
-                  gamma = sample(c(0.01,0.02,0.03,0.04,.05),1), #0.05
-                  "num_class" = 9, max.depth=8, min_child_weight=5, 
-                  subsample=sample(c(0.7,0.75,0.8),1), colsample_bytree = sample(c(0.6,0.7,0.9,0.8),1)) #0.8
+                  "nthread" = 3, set.seed = 8, eta=0.05, gamma = 0.2, #<<============#
+                  "num_class" = 9, max.depth=8, min_child_weight=6,
+                  subsample=0.8, colsample_bytree = 0.9)
     #0.05, 0.8, 0.9 | 0.01, 0.7, 0.6
-    cv.nround = sample(c(690:710),1)
+    cv.nround = 668
     # 698
     
     ### Train the model ###

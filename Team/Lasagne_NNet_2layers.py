@@ -32,7 +32,7 @@ def load_train_data(path):
     encoder = LabelEncoder()
     y = encoder.fit_transform(labels).astype(np.int32)
     scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
-    X = scaler.fit_transform(X)
+    #X = scaler.fit_transform(X)
     return X, y, encoder, scaler
     
 def load_test_data(path, scaler):
@@ -40,7 +40,7 @@ def load_test_data(path, scaler):
     df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
-    X = scaler.transform(X)
+    #X = scaler.transform(X)
     return X, ids
     
 def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
@@ -60,6 +60,8 @@ num_features = X.shape[1]
 num_rows = X.shape[0]
 Comb = np.append(X, X_test, axis=0)
 pca = PCA()
+scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+Comb = scaler.fit_transform(Comb)
 Comb = pca.fit_transform(Comb)
 X = Comb[:num_rows,:]
 X_test = Comb[num_rows:,:]
@@ -75,8 +77,8 @@ for i in range(1,31):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               ('dense2', DenseLayer),
-               ('dropout2', DropoutLayer),
+               #('dense2', DenseLayer),
+               #('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
@@ -96,15 +98,15 @@ for i in range(1,31):
     
                      dropout1_p=0.25,
                      
-                     dense2_num_units=300,
-                     dense2_nonlinearity=rectify,
+                    # dense2_num_units=300,
+                    # dense2_nonlinearity=rectify,
                      #dense2_W=lg.init.Uniform(),
                      
-                     dropout2_p=0.25,
+                     #dropout2_p=0.25,
                      
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
-                     #output_W=lg.init.Uniform(),
+                     output_W=lg.init.Uniform(),
     
                      update=nesterov_momentum,
                      #update=adagrad,
@@ -136,4 +138,4 @@ for i in range(1,31):
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65) rectify
     
     # Submission 
-    make_submission(net0, X_test, ids, encoder, name='../../NNET/nnet_3layers2_'+str(i)+'.csv')
+    make_submission(net0, X_test, ids, encoder, name='../../NNET/nnet_2layers2_'+str(i)+'.csv')

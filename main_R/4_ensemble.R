@@ -1,21 +1,23 @@
-# setwd('H:/Machine_Learning/Otto-Group-Product-Classification-Challenge')
-setwd('/Users/ivan/Work_directory/Otto-Group-Product-Classification-Challenge')
-# setwd('C:/Users/Ivan.Liuyanfeng/Desktop/Data_Mining_Work_Space/Otto-Group-Product-Classification-Challenge')
+setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challenge');
 rm(list=ls());gc()
 require(data.table)
 
 ensem_prob <- matrix(0, nrow = 144368, ncol = 10, dimnames = list(NULL, NULL))
-datadirectory <- '../otto-result' # 'results/best'
+ensem_prob <- matrix(0, nrow = 12378, ncol = 10, dimnames = list(NULL, NULL))
+datadirectory <- '../Team_xgb/Val' # 'results/best'
 files <- list.files(datadirectory,full.names = T)
 
-for (file in files){
+for (file in files[1:15]){
     result <- data.frame(fread(file,header = T, stringsAsFactor = F))
     for (i in 1:10){
         for (j in 1:nrow(ensem_prob)){
-            ensem_prob[j,i] <- max(result[j,i],ensem_prob[j,i])
+            ensem_prob[j,i] <- sum(result[j,i],ensem_prob[j,i])
         }
     }    
 }
+# ensem_prob[,2:10] <- prop.table(ensem_prob[,2:10], 1) 
+ensem_prob[,2:10] <- ensem_prob[,2:10]/length(files[1:15])
+MulLogLoss(target_df,ensem_prob[,2:10] )
 
 ensem_prob = format(ensem_prob, digits=2,scientific=F) # shrink the size of submission
 ensem_prob = data.frame(1:nrow(ensem_prob),ensem_prob[,-1])

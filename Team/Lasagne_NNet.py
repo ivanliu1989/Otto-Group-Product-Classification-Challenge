@@ -15,7 +15,7 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
 from lasagne.nonlinearities import softmax
-from lasagne.nonlinearities import leaky_rectify #leaky_rectify#
+from lasagne.nonlinearities import rectify #leaky_rectify#
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
@@ -68,20 +68,20 @@ num_features = X_train.shape[1]
 
 #X_train = np.append(X_train,X_test)
 
-#num_rows = X_train.shape[0]
-#num_rows_t = X_test.shape[0]
-#Comb = np.append(X_train, X_test, axis=0)
-#Comb = np.append(Comb, Test, axis=0)
-#pca = PCA()
-#Comb = pca.fit_transform(Comb)
-#X_train = Comb[:num_rows,:]
-#X_test = Comb[num_rows:(num_rows_t+num_rows),:]
-#Test = Comb[(num_rows_t+num_rows):,:]
+num_rows = X_train.shape[0]
+num_rows_t = X_test.shape[0]
+Comb = np.append(X_train, X_test, axis=0)
+Comb = np.append(Comb, Test, axis=0)
+pca = PCA()
+Comb = pca.fit_transform(Comb)
+X_train = Comb[:num_rows,:]
+X_test = Comb[num_rows:(num_rows_t+num_rows),:]
+Test = Comb[(num_rows_t+num_rows):,:]
 
 # Train
-for i in range(6,31):
+for i in range(1,31):
     
-    np.random.seed(i)
+    np.random.seed(i*9)
     
     layers0 = [('input', InputLayer),
                ('dropoutf', DropoutLayer),
@@ -89,8 +89,8 @@ for i in range(6,31):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               ('dense2', DenseLayer),
-               ('dropout2', DropoutLayer),
+               #('dense2', DenseLayer),
+               #('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
@@ -98,23 +98,23 @@ for i in range(6,31):
                      
                      dropoutf_p=0.15,
     
-                     dense0_num_units=800,
-                     dense0_nonlinearity=leaky_rectify,
+                     dense0_num_units=1000,
+                     dense0_nonlinearity=rectify,
                      #dense0_W=lg.init.Uniform(),
     
                      dropout0_p=0.25,
     
                      dense1_num_units=500,
-                     dense1_nonlinearity=leaky_rectify,
+                     dense1_nonlinearity=rectify,
                      #dense1_W=lg.init.Uniform(),
     
                      dropout1_p=0.25,
                      
-                     dense2_num_units=300,
-                     dense2_nonlinearity=leaky_rectify,
+                     #dense2_num_units=300,
+                     #dense2_nonlinearity=leaky_rectify,
                      #dense2_W=lg.init.Uniform(),
                      
-                     dropout2_p=0.25,
+                     #dropout2_p=0.25,
                      
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
@@ -145,7 +145,7 @@ for i in range(6,31):
     submission.to_csv(names)
     print("Wrote submission to file {}.".format(names))
     # Submission 
-    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet.csv')
+    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet2.csv')
     
     # 0.467751 0.15 1000 0.25 500 0.25 (28)
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)

@@ -6,8 +6,8 @@ load(file='data/raw_data_log.RData');
 # train <- fread('../train.csv', header=T, stringsAsFactor = F,data.table=F)
 # test <- fread('../test.csv', header=T, stringsAsFactor = F, data.table=F)
 folds <- fread('data/train_folds.csv', header=T, stringsAsFactor = F, data.table=F)$test_fold
-library(doMC)
-registerDoMC(cores = 3)
+library(doMC);registerDoMC(cores = 3)
+# options(scipen=3)
 
 trainIndex <- which(folds == 0)
 target_df <- target[trainIndex,];target_train <- target[-trainIndex,]

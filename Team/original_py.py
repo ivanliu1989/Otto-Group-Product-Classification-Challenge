@@ -14,7 +14,7 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
 from lasagne.nonlinearities import softmax
-from lasagne.nonlinearities import leaky_rectify#rectify
+#from lasagne.nonlinearities import leaky_rectify#rectify
 from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
@@ -59,6 +59,7 @@ num_rows = X.shape[0]
 Comb = np.append(X, X_test, axis=0)
 #pca = PCA()
 Comb = scaler.fit_transform(Comb)
+#Comb = pca.fit_transform(Comb)
 X = Comb[:num_rows,:]
 X_test = Comb[num_rows:,:]
 
@@ -66,15 +67,13 @@ X_test = Comb[num_rows:,:]
 np.random.seed(9)
 
 layers0 = [('input', InputLayer),
-
            ('dropoutf', DropoutLayer),
-
            ('dense0', DenseLayer),
            ('dropout0', DropoutLayer),
            ('dense1', DenseLayer),
            ('dropout1', DropoutLayer),
-           ('dense2', DenseLayer),
-           ('dropout2', DropoutLayer),
+           #('dense2', DenseLayer),
+           #('dropout2', DropoutLayer),
            ('output', DenseLayer)]
            
 net0 = NeuralNet(layers=layers0,                 
@@ -82,7 +81,7 @@ net0 = NeuralNet(layers=layers0,
                  
                  dropoutf_p=0.15,
 
-                 dense0_num_units=800,
+                 dense0_num_units=1000,
                  #dense0_nonlinearity=leaky_rectify,
                  #dense0_W=lg.init.Uniform(),
 
@@ -92,9 +91,9 @@ net0 = NeuralNet(layers=layers0,
                  #dense1_nonlinearity=leaky_rectify,
                  #dense1_W=lg.init.Uniform(),
 
-                 dropout1_p=0.25,
+                 #dropout1_p=0.25,
                  
-                 dense2_num_units=300,
+                 #dense2_num_units=300,
                  #dense2_nonlinearity=leaky_rectify,
                  #dense2_W=lg.init.Uniform(),
                  
@@ -102,7 +101,7 @@ net0 = NeuralNet(layers=layers0,
                  
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
-                 #output_W=lg.init.Uniform(),
+                 output_W=lg.init.Uniform(),
 
                  update=nesterov_momentum,
                  #update=adagrad,
@@ -133,4 +132,4 @@ net0.fit(X, y)
 # 0.427678 0.15 800 0.25 500 0.25 300 0.25 (62)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../Team_nnet_raw/lasagne_nnet2_0.450133.csv')
+make_submission(net0, X_test, ids, encoder, name='../../Team_nnet_raw/lasagne_nnet2_0.466493.csv')

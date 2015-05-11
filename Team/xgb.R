@@ -2,9 +2,9 @@ setwd('/Users/ivanliu/Google Drive/otto/Otto-Group-Product-Classification-Challe
 rm(list=ls());gc()
 require(caret);require(methods);require(xgboost);require(data.table)
 source('main_R/2_logloss_func.R');load(file='data/target.RData');
-# load(file='data/raw_data_log.RData');
-train <- fread('../train.csv', header=T, stringsAsFactor = F,data.table=F)
-test <- fread('../test.csv', header=T, stringsAsFactor = F, data.table=F)
+load(file='data/raw_data_log.RData');
+#train <- fread('../train.csv', header=T, stringsAsFactor = F,data.table=F)
+#test <- fread('../test.csv', header=T, stringsAsFactor = F, data.table=F)
 folds <- fread('data/train_folds.csv', header=T, stringsAsFactor = F, data.table=F)$test_fold
 # library(doMC);registerDoMC(cores = 3)
 # options(scipen=3)
@@ -72,7 +72,7 @@ for (i in 1:30){
     pred = format(pred, digits=2,scientific=F) # shrink the size of submission
     pred = data.frame(1:nrow(pred),pred)
     names(pred) = c('id', paste0('Class_',1:9))
-    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb.csv'), 
+    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb_',seeds,'.csv'), 
               quote=FALSE,row.names=FALSE)
     print(paste0('Model:',i,' Complete!'))
 }

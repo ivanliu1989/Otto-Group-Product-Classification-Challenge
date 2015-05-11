@@ -35,7 +35,7 @@ def load_test_data(path):
     df = pd.read_csv(path)
     df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
-    X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
+    X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(int)
     return X, ids
     
 def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
@@ -118,6 +118,10 @@ y_group1 = y[IDX]
 IDX = np.where(groups == 1)
 X_group2 = X[IDX]
 y_group2 = y[IDX]
+IDX = np.where(groups == 2)
+X_group3 = X[IDX]
+y_group3 = y[IDX]
+
 
 # Train Group 1
 layers1 = [('input', InputLayer),
@@ -157,7 +161,7 @@ net1 = NeuralNet(layers=layers1,
                  max_epochs=200)
                  
 net1.fit(X_group1, y_group1)
-y_prob1 = net1.predict_proba(X_group1)
+y_prob1 = net1.predict_proba(test_group1)
 
 # Train Group 2
 layers2 = [('input', InputLayer),
@@ -197,8 +201,53 @@ net2 = NeuralNet(layers=layers2,
                  max_epochs=200)
                  
 net2.fit(X_group2, y_group2)
-y_prob2 = net2.predict(X_group2)
+y_prob2 = net2.predict_proba(test_group2)
 
+# Train Group 3
+layers3 = [('input', InputLayer),
+           ('dropoutf', DropoutLayer),
+           ('dense0', DenseLayer),
+           ('dropout0', DropoutLayer),
+           ('dense1', DenseLayer),
+           ('dropout1', DropoutLayer),
+           ('dense2', DenseLayer),
+           ('dropout2', DropoutLayer),
+           ('output', DenseLayer)]
+           
+net3 = NeuralNet(layers=layers3,                 
+                 input_shape=(None, num_features),
+                 dropoutf_p=0.15,
+                 dense0_num_units=800,
+                 dropout0_p=0.25,
+                 dense1_num_units=500,
+                 dropout1_p=0.25,                 
+                 dense2_num_units=300,                 
+                 dropout2_p=0.25,                 
+                 output_num_units=num_classes,
+                 output_nonlinearity=softmax,
+                 output_W=lg.init.Uniform(),
+                 update=nesterov_momentum,
+                 update_learning_rate=theano.shared(float32(0.01)),
+                 update_momentum=theano.shared(float32(0.9)),
+                 
+                 on_epoch_finished=[
+                        AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
+                        AdjustVariable('update_momentum', start=0.9, stop=0.999),
+                        EarlyStopping(patience=30)
+                        ],
+                 
+                 eval_size=0.2,
+                 verbose=1,
+                 max_epochs=200)
+                 
+net3.fit(X_group3, y_group3)
+y_prob3 = net3.predict_proba(test_group3)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../Team_nnet_raw/lasagne_nnet2_0.466493.csv')
+name='../../Team_nnet_cascade/lasagne_nnet_cascade2.csv'
+submission = pd.read_csv('../data/sampleSubmission.csv')
+submission.set_index('id', inplace=True)
+submission.ix[ids1,:] = y_prob1
+submission.ix[ids2,:] = y_prob2
+submission.ix[ids3,:] = y_prob3
+submission.to_csv(name)

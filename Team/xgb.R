@@ -6,8 +6,8 @@ load(file='data/raw_data_log.RData');
 #train <- fread('../train.csv', header=T, stringsAsFactor = F,data.table=F)
 #test <- fread('../test.csv', header=T, stringsAsFactor = F, data.table=F)
 folds <- fread('data/train_folds.csv', header=T, stringsAsFactor = F, data.table=F)$test_fold
-# library(doMC);registerDoMC(cores = 3)
-# options(scipen=3)
+library(doMC);registerDoMC(cores = 3)
+options(scipen=3)
 
 train_tot <- cbind(train, target, folds)
 train_tot <- shuffle(train_tot) #<<============#
@@ -35,7 +35,7 @@ dtest = matrix(as.numeric(test),nrow(test),ncol(test))
 train_tot <- as.matrix(train_tot[,2:94])
 dtrain_tot = matrix(as.numeric(train_tot),nrow(train_tot),ncol(train_tot))
 
-for (i in 1:30){
+for (i in 6:30){
     seeds <- 9*i
     set.seed(seeds) #<<============#
     param <- list("objective" = "multi:softprob",
@@ -44,7 +44,7 @@ for (i in 1:30){
                   "num_class" = 9, max.depth=8, min_child_weight=5,
                   subsample=0.7, colsample_bytree = 0.6)
     #0.05, 0.8, 0.9 | 0.01, 0.7, 0.6
-    cv.nround = 698
+    cv.nround = 668
     # 698
     
     ### Train the model ###

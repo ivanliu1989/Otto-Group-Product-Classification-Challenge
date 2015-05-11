@@ -118,7 +118,7 @@ X_group3 = X[IDX]
 y_group3 = y[IDX]
 
 y_prob_p = net0.predict_proba(X_test)
-log_loss(groups_test, y_prob_p) #0.081823
+log_loss(groups_test, y_prob_p) #0.081823 | 0.0776
 
 # Train Group 1
 layers1 = [('input', InputLayer),
@@ -169,17 +169,21 @@ layers2 = [('input', InputLayer),
            ('dropout1', DropoutLayer),
            ('dense2', DenseLayer),
            ('dropout2', DropoutLayer),
+            ('dense3', DenseLayer),
+           ('dropout3', DropoutLayer),
            ('output', DenseLayer)]
            
 net2 = NeuralNet(layers=layers2,                 
                  input_shape=(None, num_features),
                  dropoutf_p=0.15,
-                 dense0_num_units=800,
+                 dense0_num_units=1000,
                  dropout0_p=0.25,
                  dense1_num_units=500,
                  dropout1_p=0.25,                 
-                 dense2_num_units=300,                 
-                 dropout2_p=0.25,                 
+                 dense2_num_units=500,                 
+                 dropout2_p=0.25, 
+                 dense3_num_units=300,                 
+                 dropout3_p=0.25, 
                  output_num_units=num_classes,
                  output_nonlinearity=softmax,
                  output_W=lg.init.Uniform(),
@@ -188,14 +192,14 @@ net2 = NeuralNet(layers=layers2,
                  update_momentum=theano.shared(float32(0.9)),
                  
                  on_epoch_finished=[
-                        AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
+                        AdjustVariable('update_learning_rate', start=0.001, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=30)
+                        EarlyStopping(patience=100)
                         ],
                  
                  eval_size=0.2,
                  verbose=1,
-                 max_epochs=200)
+                 max_epochs=500)
                  
 net2.fit(X_group2, y_group2)
 y_prob2 = net2.predict_proba(test_group2)
@@ -230,7 +234,7 @@ net3 = NeuralNet(layers=layers3,
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=30)
+                        EarlyStopping(patience=20)
                         ],
                  
                  eval_size=0.2,
@@ -252,8 +256,8 @@ IDX = np.where(y_prob == 2)
 y_prob_tot[IDX] = y_prob3
 y_test3 = y_test[IDX]
 
-log_loss(y_test1, y_prob1)
-log_loss(y_test2, y_prob2)
+log_loss(y_test1, y_prob1) #0.43278267824509881
+log_loss(y_test2, y_prob2) #0.90879075153076982
 log_loss(y_test3, y_prob3)
 log_loss(y_test, y_prob_tot)
 

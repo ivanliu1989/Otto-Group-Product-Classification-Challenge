@@ -236,7 +236,7 @@ net3.fit(X_group3, y_group3)
 y_prob3 = net3.predict_proba(test_group3)
 
 # Submission 
-name='../../Team_nnet_cascade/lasagne_nnet_cascade2.csv'
+name='../../Team_nnet_cascade/lasagne_nnet_cascade3.csv'
 submission = pd.read_csv('../data/sampleSubmission.csv')
 submission.set_index('id', inplace=True)
 submission.ix[ids1,:] = y_prob1

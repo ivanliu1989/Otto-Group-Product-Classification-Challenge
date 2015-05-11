@@ -19,6 +19,7 @@ from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
 from early_stopping import EarlyStopping
+from sklearn.metrics import log_loss
 
 def load_train_data(path):
     train = pd.read_csv(path)  
@@ -47,12 +48,12 @@ num_groups = 3
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
 
-num_rows = X.shape[0]
-Comb = np.append(X, X_test, axis=0)
-scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
-Comb = scaler.fit_transform(Comb)
-X = Comb[:num_rows,:]
-X_test = Comb[num_rows:,:]
+#num_rows = X.shape[0]
+#Comb = np.append(X, X_test, axis=0)
+#scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+#Comb = scaler.fit_transform(Comb)
+#X = Comb[:num_rows,:]
+#X_test = Comb[num_rows:,:]
 
 # Train Groups
 np.random.seed(9)
@@ -116,6 +117,8 @@ IDX = np.where(groups_train == 2)
 X_group3 = X[IDX]
 y_group3 = y[IDX]
 
+y_prob_p = net0.predict_proba(X_test)
+log_loss(groups_test, y_prob_p) #0.081823
 
 # Train Group 1
 layers1 = [('input', InputLayer),
@@ -238,10 +241,19 @@ net3.fit(X_group3, y_group3)
 y_prob3 = net3.predict_proba(test_group3)
 
 # Submission 
-name='../../Team_nnet_cascade/lasagne_nnet_cascade2.csv'
-submission = pd.read_csv('../data/sampleSubmission.csv')
-submission.set_index('id', inplace=True)
-submission.ix[ids1,:] = y_prob1
-submission.ix[ids2,:] = y_prob2
-submission.ix[ids3,:] = y_prob3
-submission.to_csv(name)
+y_prob_tot = net3.predict_proba(X_test)
+IDX = np.where(y_prob == 0)
+y_prob_tot[IDX] = y_prob1
+y_test1 = y_test[IDX]
+IDX = np.where(y_prob == 1)
+y_prob_tot[IDX] = y_prob2
+y_test2 = y_test[IDX]
+IDX = np.where(y_prob == 2)
+y_prob_tot[IDX] = y_prob3
+y_test3 = y_test[IDX]
+
+log_loss(y_test1, y_prob1)
+log_loss(y_test2, y_prob2)
+log_loss(y_test3, y_prob3)
+log_loss(y_test, y_prob_tot)
+

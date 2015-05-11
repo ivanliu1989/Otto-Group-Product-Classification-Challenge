@@ -19,28 +19,30 @@ from lasagne.updates import nesterov_momentum
 from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
 from early_stopping import EarlyStopping
-   
+
 def load_train_data(path):
-    df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
-    X = df.values.copy()
-    np.random.shuffle(X)
-    X, labels, groups = X[:, 1:-3].astype(np.float32), X[:, -3], X[:, -1].astype(np.int32)
+    train = pd.read_csv(path)  
+    train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
+    train = train.values.copy()
+    np.random.shuffle(train)
+    train, labels, folds, groups, ids = train[:, 1:-3].astype(np.float32), train[:, -3], train[:, -2], train[:, -1].astype(np.int32), train[:, 0].astype(int)
+    trainIDX = np.where(folds != 0)
+    testIDX = np.where(folds == 0)
+    X_train = train[trainIDX]
+    X_test = train[testIDX]
+    ids = ids[testIDX]
     encoder = LabelEncoder()
     groups = encoder.fit_transform(groups).astype(np.int32)
-    y = encoder.fit_transform(labels).astype(np.int32)
-    return X, y, encoder, groups
+    labelsPP = encoder.fit_transform(labels)
+    y_train = labelsPP[trainIDX].astype(np.int32)
+    y_test = labelsPP[testIDX].astype(np.int32)
+    groups_train = groups[trainIDX]
+    groups_test = groups[testIDX]
     
-def load_test_data(path):
-    df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
-    X = df.values.copy()
-    X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(int)
-    return X, ids
+    return X_train, y_train, X_test, y_test, groups_train,groups_test,encoder,ids
     
 # Load Data    
-X, y, encoder, groups = load_train_data('../data/train_folds_cascade.csv')
-X_test, ids = load_test_data('../../test.csv')
+X, y, X_test, y_test, groups_train,groups_test,encoder,ids = load_train_data('../data/train_folds_cascade.csv')
 num_groups = 3
 num_classes = len(encoder.classes_)
 num_features = X.shape[1]
@@ -91,7 +93,7 @@ net0 = NeuralNet(layers=layers0,
                  verbose=1,
                  max_epochs=200)
                  
-net0.fit(X, groups)
+net0.fit(X, groups_train)
 
 y_prob = net0.predict(X_test)
 IDX = np.where(y_prob == 0)
@@ -104,13 +106,13 @@ IDX = np.where(y_prob == 2)
 test_group3 = X_test[IDX]
 ids3 = ids[IDX]
 
-IDX = np.where(groups == 0)
+IDX = np.where(groups_train == 0)
 X_group1 = X[IDX]
 y_group1 = y[IDX]
-IDX = np.where(groups == 1)
+IDX = np.where(groups_train == 1)
 X_group2 = X[IDX]
 y_group2 = y[IDX]
-IDX = np.where(groups == 2)
+IDX = np.where(groups_train == 2)
 X_group3 = X[IDX]
 y_group3 = y[IDX]
 

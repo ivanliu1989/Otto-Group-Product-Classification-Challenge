@@ -63,7 +63,8 @@ for (i in 20:30){
     print(paste0('Validation:',score,' Complete!'))
     ### Train the model ###
     bst = xgboost(param=param, data = dtrain_tot, label = y_tot, nround = cv.nround)
-    
+    bst.cv = xgb.cv(param=param, data = dtrain_tot, label = y_tot, nfold = 5, 
+                    nrounds=cv.nround,prediction = TRUE)
     ### Make prediction ###
     pred = predict(bst,dtest)#, ntreelimit=1
     pred = matrix(pred,9,length(pred)/9)

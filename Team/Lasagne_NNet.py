@@ -72,7 +72,7 @@ y = np.append(y_train, y_test, axis=0)
 Test = Comb[(num_rows_t+num_rows):,:]
 
 # Train
-for i in range(1,31):
+for i in range(31,61):
     
     np.random.seed(8*i)
     
@@ -82,19 +82,19 @@ for i in range(1,31):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               ('dense2', DenseLayer),
-               ('dropout2', DropoutLayer),
+               #('dense2', DenseLayer),
+               #('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
                      input_shape=(None, num_features),
                      dropoutf_p=0.15,
-                     dense0_num_units=800,
+                     dense0_num_units=1000,
                      dropout0_p=0.25,
                      dense1_num_units=500,
                      dropout1_p=0.25,
-                     dense2_num_units=300,
-                     dropout2_p=0.25,
+                     #dense2_num_units=300,
+                     #dropout2_p=0.25,
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
                      output_W=lg.init.Uniform(),

@@ -35,16 +35,16 @@ dtest = matrix(as.numeric(test),nrow(test),ncol(test))
 train_tot <- as.matrix(train_tot[,2:94])
 dtrain_tot = matrix(as.numeric(train_tot),nrow(train_tot),ncol(train_tot))
 
-for (i in 6:30){
+for (i in 20:30){
     seeds <- 9*i
     set.seed(seeds) #<<============#
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
-                  "nthread" = 3, set.seed = seeds, eta=0.05, gamma = 0.01, #<<============#
+                  "nthread" = 3, set.seed = seeds, eta=0.02, gamma = 0.01, #<<============#
                   "num_class" = 9, max.depth=8, min_child_weight=5,
                   subsample=0.7, colsample_bytree = 0.6)
     #0.05, 0.8, 0.9 | 0.01, 0.7, 0.6
-    cv.nround = 668
+    cv.nround = 1668
     # 698
     
     ### Train the model ###

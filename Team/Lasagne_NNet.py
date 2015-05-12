@@ -20,6 +20,7 @@ from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
 from early_stopping import EarlyStopping
 from sklearn.metrics import log_loss
+from lasagne.nonlinearities import rectify#rectify
 
 def load_train_data(path):
     train = pd.read_csv(path)  
@@ -36,13 +37,17 @@ def load_train_data(path):
     labelsPP = encoder.fit_transform(labels)
     y_train = labelsPP[trainIDX].astype(np.int32)
     y_test = labelsPP[testIDX].astype(np.int32)
-    return X_train, y_train, X_test, y_test, encoder, ids
+    scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    return X_train, y_train, X_test, y_test, encoder, ids,scaler
     
-def load_test_data(path):
+def load_test_data(path, scaler):
     df = pd.read_csv(path)
     df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
+    X = scaler.transform(X)
     return X, ids
     
 def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
@@ -54,25 +59,25 @@ def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
     print("Wrote submission to file {}.".format(name))
 
 # Load Data    
-X_train, y_train, X_test, y_test, encoder, testIDS = load_train_data('../data/train_folds.csv')
-Test, ids = load_test_data('../../test.csv')
+X_train, y_train, X_test, y_test, encoder, testIDS,scaler = load_train_data('../data/train_folds.csv')
+Test, ids = load_test_data('../../test.csv',scaler)
 num_classes = len(encoder.classes_)
 num_features = X_train.shape[1]
 
 num_rows = X_train.shape[0]
 num_rows_t = X_test.shape[0]
 Comb = np.append(X_train, X_test, axis=0)
-Comb = np.append(Comb, Test, axis=0)
-scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
-Comb = scaler.fit_transform(Comb)
-X_train = Comb[:num_rows,:]
-X_test = Comb[num_rows:(num_rows_t+num_rows),:]
+#Comb = np.append(Comb, Test, axis=0)
+#scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+#Comb = scaler.fit_transform(Comb)
+#X_train = Comb[:num_rows,:]
+#X_test = Comb[num_rows:(num_rows_t+num_rows),:]
 X = Comb[:(num_rows_t+num_rows),:]
 y = np.append(y_train, y_test, axis=0)
-Test = Comb[(num_rows_t+num_rows):,:]
+#Test = Comb[(num_rows_t+num_rows):,:]
 
 # Train
-for i in range(31,61):
+for i in range(61,91):
     
     np.random.seed(8*i)
     
@@ -82,19 +87,22 @@ for i in range(31,61):
                ('dropout0', DropoutLayer),
                ('dense1', DenseLayer),
                ('dropout1', DropoutLayer),
-               #('dense2', DenseLayer),
-               #('dropout2', DropoutLayer),
+               ('dense2', DenseLayer),
+               ('dropout2', DropoutLayer),
                ('output', DenseLayer)]
                
     net0 = NeuralNet(layers=layers0,                 
                      input_shape=(None, num_features),
                      dropoutf_p=0.15,
-                     dense0_num_units=1000,
+                     dense0_num_units=800,
+                     #dense0_nonlinearity=rectify,
                      dropout0_p=0.25,
                      dense1_num_units=500,
+                     #dense1_nonlinearity=rectify,
                      dropout1_p=0.25,
-                     #dense2_num_units=300,
-                     #dropout2_p=0.25,
+                     dense2_num_units=300,
+                     #dense2_nonlinearity=rectify,
+                     dropout2_p=0.25,
                      output_num_units=num_classes,
                      output_nonlinearity=softmax,
                      output_W=lg.init.Uniform(),
@@ -103,12 +111,12 @@ for i in range(31,61):
                      update_momentum=theano.shared(float32(0.9)),
                      
                      on_epoch_finished=[
-                            AdjustVariable('update_learning_rate', start=0.015, stop=0.001),
+                            AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
                             AdjustVariable('update_momentum', start=0.9, stop=0.999),
                             EarlyStopping(patience=30)
                             ],
                      
-                     eval_size=0.2,
+                     eval_size=0.1,
                      verbose=1,
                      max_epochs=200)
                      

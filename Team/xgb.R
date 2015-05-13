@@ -35,16 +35,16 @@ dtest = matrix(as.numeric(test),nrow(test),ncol(test))
 train_tot <- as.matrix(train_tot[,2:94])
 dtrain_tot = matrix(as.numeric(train_tot),nrow(train_tot),ncol(train_tot))
 
-for (i in 20:30){
+for (i in 1:30){
     seeds <- 9*i
     set.seed(seeds) #<<============#
     param <- list("objective" = "multi:softprob",
                   "eval_metric" = "mlogloss", 
-                  "nthread" = 3, set.seed = seeds, eta=0.02, gamma = 0.01, #<<============#
+                  "nthread" = 3, set.seed = seeds, eta=0.05, gamma = 0.01, #<<============#
                   "num_class" = 9, max.depth=8, min_child_weight=5,
                   subsample=0.7, colsample_bytree = 0.6)
     #0.05, 0.8, 0.9 | 0.01, 0.7, 0.6
-    cv.nround = 1668
+    cv.nround = 698
     # 698
     
     ### Train the model ###
@@ -62,18 +62,16 @@ for (i in 20:30){
               quote=FALSE,row.names=FALSE)
     print(paste0('Validation:',score,' Complete!'))
     ### Train the model ###
-    bst = xgboost(param=param, data = dtrain_tot, label = y_tot, nround = cv.nround)
-    bst.cv = xgb.cv(param=param, data = dtrain_tot, label = y_tot, nfold = 5, 
-                    nrounds=cv.nround,prediction = TRUE)
+    bst2 = xgboost(param=param, data = dtrain_tot, label = y_tot, nround = cv.nround)
     ### Make prediction ###
-    pred = predict(bst,dtest)#, ntreelimit=1
-    pred = matrix(pred,9,length(pred)/9)
-    pred = t(pred)
+    pred2 = predict(bst2,dtest)#, ntreelimit=1
+    pred2 = matrix(pred2,9,length(pred2)/9)
+    pred2 = t(pred2)
     
-    pred = format(pred, digits=2,scientific=F) # shrink the size of submission
-    pred = data.frame(1:nrow(pred),pred)
-    names(pred) = c('id', paste0('Class_',1:9))
-    write.csv(pred,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb_',seeds,'.csv'), 
+    pred2 = format(pred2, digits=2,scientific=F) # shrink the size of submission
+    pred2 = data.frame(1:nrow(pred2),pred2)
+    names(pred2) = c('id', paste0('Class_',1:9))
+    write.csv(pred2,file=paste0('../Team_xgb/Pred/testPred_Ivan_m',i,'_xgb_',seeds,'.csv'), 
               quote=FALSE,row.names=FALSE)
     print(paste0('Model:',i,' Complete!'))
 }

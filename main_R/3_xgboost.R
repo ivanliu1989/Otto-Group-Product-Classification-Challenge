@@ -29,10 +29,10 @@ dtest <- data.matrix(x[teind,])
 ### Set necessary parameter ###
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
-              "nthread" = 3, set.seed = 8, eta=0.05, gamma = 0.2, #<<============#
-              "num_class" = 9, max.depth=8, min_child_weight=6,
-              subsample=0.8, colsample_bytree = 0.9)
-
+              "nthread" = 3, set.seed = 8, eta=0.05, gamma = 0.05, #<<============#
+              "num_class" = 9, max.depth=8, min_child_weight=5,
+              subsample=0.6, colsample_bytree = 0.7)
+#2025 | 0.02
 # param <- list("objective" = "multi:softprob",
 #               "eval_metric" = "mlogloss", 
 #               "nthread" = 3, set.seed = 168, eta=0.05, gamma = 0.03, #0.05
@@ -42,8 +42,8 @@ param <- list("objective" = "multi:softprob",
 # reg:logistic | logloss | lambda = 0 (L2) | alpha = 0 (L1) | lambda_bias = 0  
 
 ### Run Cross Valication
-cv.nround = 668
-# bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 10, 
+cv.nround = 741
+# bst.cv = xgb.cv(param=param, data = dtrain, label = y, nfold = 5, 
 #                 nrounds=cv.nround,prediction = TRUE)
 
 ### Train the model ###

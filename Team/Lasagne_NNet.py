@@ -113,24 +113,24 @@ for i in range(1,31):
                      on_epoch_finished=[
                             AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
                             AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                            EarlyStopping(patience=30)
+                            EarlyStopping(patience=20)
                             ],
                      
                      eval_size=0.1,
                      verbose=1,
-                     max_epochs=150)
+                     max_epochs=100)
                      
     net0.fit(X_train, y_train)
     y_prob = net0.predict_proba(X_test)
     score=log_loss(y_test, y_prob)
-    names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_CV'+ str(score)+'_nnet.csv'
+    names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_CV'+ str(score)+'_nnet2.csv'
     submission = pd.DataFrame(data=y_prob, index=testIDS).sort_index(axis=1)
     submission.to_csv(names)
     print("Wrote submission to file {}.".format(names))
     
     # Submission 
     net0.fit(X, y)
-    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet.csv')
+    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet2.csv')
     
     # 0.467751 0.15 1000 0.25 500 0.25 (28)
     # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)

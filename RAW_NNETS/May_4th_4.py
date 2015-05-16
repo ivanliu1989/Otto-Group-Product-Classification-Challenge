@@ -80,13 +80,13 @@ net0 = NeuralNet(layers=layers0,
                  dropoutf_p=0.15,
 
                  dense0_num_units=1000,
-                 #dense0_nonlinearity=leaky_rectify,
+                 dense0_nonlinearity=leaky_rectify,
                  #dense0_W=lg.init.Uniform(),
 
                  dropout0_p=0.25,
 
                  dense1_num_units=500,
-                 #dense1_nonlinearity=leaky_rectify,
+                 dense1_nonlinearity=leaky_rectify,
                  #dense1_W=lg.init.Uniform(),
 
                  dropout1_p=0.25,
@@ -101,14 +101,14 @@ net0 = NeuralNet(layers=layers0,
                  output_nonlinearity=softmax,
                  #output_W=lg.init.Uniform(),
 
-                 #update=nesterov_momentum,
+                 update=nesterov_momentum,
                  update_learning_rate=theano.shared(float32(0.01)),
-                 #update_momentum=theano.shared(float32(0.9)),
+                 update_momentum=theano.shared(float32(0.9)),
                  
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
                         AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=30)
+                        EarlyStopping(patience=20)
                         ],
                  
                  eval_size=0.2,
@@ -126,43 +126,6 @@ net0.fit(X, y)
 # 0.474071 0.15 1000 0.25 500 0.25 (46)
 # 0.430886 0.15 1000 0.25 500 0.25 (44)
 
-# Bagging
-import pickle
-
-prob = net0.predict_proba(X[te:])
-neg_log_loss = 0
-for row in range(0,prob.shape[0]):
-neg_log_loss += - math.log(prob[row, y[te+row]]) 
-neg_log_loss /= prob.shape[0] 
-print "%f" % neg_log_loss
-
-fs = 'objs.pickle_ada_1000_500_1'
-
-with open(fs, 'w') as f:
-pickle.dump(prob, f)
-
-# then to bag
-
-fs1 = 'objs.pickle_ada_1000_500_1'
-
-fs2 = 'objs.pickle_ada_1000_500_2'
-
-fs3 = 'objs.pickle_ada_1000_500_3'
-
-with open(fs1) as f:
-
-p1 = pickle.load(f)
-with open(fs2) as f:
-p2 = pickle.load(f)
-with open(fs3) as f:
-p3 = pickle.load(f)
-
-pred =(p1+p2+p3)/3
-neg_log_loss = 0
-for row in range(0,pred.shape[0]):
-neg_log_loss += - math.log(pred[row, y[te+row]]) 
-neg_log_loss /= pred.shape[0] 
-print "%f" % neg_log_loss
-
 # Submission 
-make_submission(net0, X_test, ids, encoder)
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_0.478491.csv')
+#0.472  28 34

@@ -78,62 +78,120 @@ y = np.append(y_train, y_test, axis=0)
 
 # Train
 for i in range(1,31):
+    # Load Data    
+    X_train, y_train, X_test, y_test, encoder, testIDS,scaler = load_train_data('../data/train_folds.csv')
+    Test, ids = load_test_data('../../test.csv',scaler)
+    num_classes = len(encoder.classes_)
+    num_features = X_train.shape[1]
     
-    np.random.seed(8*i)
+    num_rows = X_train.shape[0]
+    num_rows_t = X_test.shape[0]
+    Comb = np.append(X_train, X_test, axis=0)
+    #Comb = np.append(Comb, Test, axis=0)
+    #scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+    #Comb = scaler.fit_transform(Comb)
+    #X_train = Comb[:num_rows,:]
+    #X_test = Comb[num_rows:(num_rows_t+num_rows),:]
+    X = Comb[:(num_rows_t+num_rows),:]
+    y = np.append(y_train, y_test, axis=0)
+    #Test = Comb[(num_rows_t+num_rows):,:]
     
-    layers0 = [('input', InputLayer),
-               ('dropoutf', DropoutLayer),
-               ('dense0', DenseLayer),
-               ('dropout0', DropoutLayer),
-               ('dense1', DenseLayer),
-               ('dropout1', DropoutLayer),
-               #('dense2', DenseLayer),
-               #('dropout2', DropoutLayer),
-               ('output', DenseLayer)]
-               
-    net0 = NeuralNet(layers=layers0,                 
-                     input_shape=(None, num_features),
-                     dropoutf_p=0.15,
-                     dense0_num_units=1000,
-                     dense0_nonlinearity=rectify,
-                     dropout0_p=0.25,
-                     dense1_num_units=500,
-                     dense1_nonlinearity=rectify,
-                     dropout1_p=0.25,
-                    # dense2_num_units=300,
-                     #dense2_nonlinearity=rectify,
-                     #dropout2_p=0.25,
-                     output_num_units=num_classes,
-                     output_nonlinearity=softmax,
-                     output_W=lg.init.Uniform(),
-                     update=nesterov_momentum,
-                     update_learning_rate=theano.shared(float32(0.01)),
-                     update_momentum=theano.shared(float32(0.9)),
-                     
-                     on_epoch_finished=[
-                            AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
-                            AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                            EarlyStopping(patience=20)
-                            ],
-                     
-                     eval_size=0.1,
-                     verbose=1,
-                     max_epochs=100)
-                     
-    net0.fit(X_train, y_train)
-    y_prob = net0.predict_proba(X_test)
-    score=log_loss(y_test, y_prob)
-    names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_CV'+ str(score)+'_nnet2.csv'
-    submission = pd.DataFrame(data=y_prob, index=testIDS).sort_index(axis=1)
-    submission.to_csv(names)
-    print("Wrote submission to file {}.".format(names))
-    
-    # Submission 
-    net0.fit(X, y)
-    make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_nnet2.csv')
-    
-    # 0.467751 0.15 1000 0.25 500 0.25 (28)
-    # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)
-    
-    # 0.15 800 0.25 500 0.25 300 0.25 | 0.015-0.001 | 0.9-0.999 | 0.2 | 150 | log
-    
+    for j in range(1,6):
+        
+        np.random.seed(8*i*j)
+        
+        layers0 = [('input', InputLayer),
+                   ('dropoutf', DropoutLayer),
+                   ('dense0', DenseLayer),
+                   ('dropout0', DropoutLayer),
+                   ('dense1', DenseLayer),
+                   ('dropout1', DropoutLayer),
+                   #('dense2', DenseLayer),
+                   #('dropout2', DropoutLayer),
+                   ('output', DenseLayer)]
+                   
+        net0 = NeuralNet(layers=layers0,                 
+                         input_shape=(None, num_features),
+                         dropoutf_p=0.15,
+                         dense0_num_units=1000,
+                         dense0_nonlinearity=rectify,
+                         dropout0_p=0.25,
+                         dense1_num_units=500,
+                         dense1_nonlinearity=rectify,
+                         dropout1_p=0.25,
+                        # dense2_num_units=300,
+                         #dense2_nonlinearity=rectify,
+                         #dropout2_p=0.25,
+                         output_num_units=num_classes,
+                         output_nonlinearity=softmax,
+                         output_W=lg.init.Uniform(),
+                         update=nesterov_momentum,
+                         update_learning_rate=theano.shared(float32(0.01)),
+                         update_momentum=theano.shared(float32(0.9)),
+                         
+                         on_epoch_finished=[
+                                AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
+                                AdjustVariable('update_momentum', start=0.9, stop=0.999),
+                                EarlyStopping(patience=20)
+                                ],
+                         
+                         eval_size=0.1,
+                         verbose=1,
+                         max_epochs=100)
+            
+        layers1 = [('input', InputLayer),
+                   ('dropoutf', DropoutLayer),
+                   ('dense0', DenseLayer),
+                   ('dropout0', DropoutLayer),
+                   ('dense1', DenseLayer),
+                   ('dropout1', DropoutLayer),
+                   #('dense2', DenseLayer),
+                   #('dropout2', DropoutLayer),
+                   ('output', DenseLayer)]
+                   
+        net1 = NeuralNet(layers=layers0,                 
+                         input_shape=(None, num_features),
+                         dropoutf_p=0.15,
+                         dense0_num_units=1000,
+                         dense0_nonlinearity=rectify,
+                         dropout0_p=0.25,
+                         dense1_num_units=500,
+                         dense1_nonlinearity=rectify,
+                         dropout1_p=0.25,
+                        # dense2_num_units=300,
+                         #dense2_nonlinearity=rectify,
+                         #dropout2_p=0.25,
+                         output_num_units=num_classes,
+                         output_nonlinearity=softmax,
+                         output_W=lg.init.Uniform(),
+                         update=nesterov_momentum,
+                         update_learning_rate=theano.shared(float32(0.01)),
+                         update_momentum=theano.shared(float32(0.9)),
+                         
+                         on_epoch_finished=[
+                                AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
+                                AdjustVariable('update_momentum', start=0.9, stop=0.999),
+                                EarlyStopping(patience=20)
+                                ],
+                         
+                         eval_size=0.1,
+                         verbose=1,
+                         max_epochs=100)
+                         
+        net0.fit(X_train, y_train)
+        y_prob = net0.predict_proba(X_test)
+        score=log_loss(y_test, y_prob)
+        names = '../../Team_nnet/Val/valPred_Ivan_m'+str(i)+'_'+str(j)+'_CV'+ str(score)+'_nnet2.csv'
+        submission = pd.DataFrame(data=y_prob, index=testIDS).sort_index(axis=1)
+        submission.to_csv(names)
+        print("Wrote submission to file {}.".format(names))
+        
+        # Submission 
+        net1.fit(X, y)
+        make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_'+str(j)+'_nnet2.csv')
+        
+        # 0.467751 0.15 1000 0.25 500 0.25 (28)
+        # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65)
+        
+        # 0.15 800 0.25 500 0.25 300 0.25 | 0.015-0.001 | 0.9-0.999 | 0.2 | 150 | log
+        

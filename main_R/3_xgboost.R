@@ -30,7 +30,7 @@ dtest <- data.matrix(x[teind,])
 param <- list("objective" = "multi:softprob",
               "eval_metric" = "mlogloss", 
               "nthread" = 3, set.seed = 8, eta=0.02, gamma = 0.01, #<<============#
-              "num_class" = 9, max.depth=8, min_child_weight=4,
+              "num_class" = 9, max.depth=8, min_child_weight=5,
               subsample=0.7, colsample_bytree = 0.6)
 #2025 | 0.02
 # param <- list("objective" = "multi:softprob",

@@ -98,10 +98,10 @@ net0 = NeuralNet(layers=layers0,
                  
                  eval_size=0.2,
                  verbose=1,
-                 max_epochs=160)
+                 max_epochs=200)
                  
 net0.fit(X, y)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_at_0.455143.csv')
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_at_0.456369.csv')
 # 0.457593 71 39 58 66

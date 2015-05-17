@@ -40,17 +40,34 @@ test.hex <- as.h2o(localH2O,test)
 predictors <- 1:(ncol(train.hex)-1)
 response <- ncol(train.hex)
 
-for(i in 1:20){
+for(i in 4:20){
 print(i)
+# model <- h2o.deeplearning(x=predictors,
+#                           y=response,
+#                           data=train.hex,
+#                           classification=T,
+#                           activation="RectifierWithDropout",
+#                           hidden=c(1024,512,256),
+#                           hidden_dropout_ratio=c(0.5,0.5,0.5),
+#                           input_dropout_ratio=0.05,
+#                           epochs=50,
+#                           l1=1e-5,
+#                           l2=1e-5,
+#                           rho=0.99,
+#                           epsilon=1e-8,
+#                           train_samples_per_iteration=2000,
+#                           max_w2=10,
+#                           seed=8)
+
 model <- h2o.deeplearning(x=predictors,
                           y=response,
                           data=train.hex,
                           classification=T,
                           activation="RectifierWithDropout",
-                          hidden=c(1024,512,256),
-                          hidden_dropout_ratio=c(0.5,0.5,0.5),
-                          input_dropout_ratio=0.05,
-                          epochs=100,
+                          hidden=c(800,500,300),
+                          hidden_dropout_ratio=c(0.25,0.25,0.25),
+                          input_dropout_ratio=0.15,
+                          epochs=80,
                           l1=1e-5,
                           l2=1e-5,
                           rho=0.99,

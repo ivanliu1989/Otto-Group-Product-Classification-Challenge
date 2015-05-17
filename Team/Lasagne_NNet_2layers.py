@@ -21,6 +21,7 @@ from early_stopping import EarlyStopping
 from sklearn.metrics import log_loss
 
 def Anscombe_Transform(data):
+    #data = float(data)
     data = (data + 0.375)**(0.5)
     return data
     
@@ -32,7 +33,17 @@ def load_train_data(path):
     X, labels = X[:, 1:-1].astype(np.float32), X[:, -1]
     encoder = LabelEncoder()
     y = encoder.fit_transform(labels).astype(np.int32)
-    return X, y, encoder
+    scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
+    #X = scaler.fit_transform(X)
+    return X, y, encoder, scaler
+    
+def load_test_data(path, scaler):
+    df = pd.read_csv(path)
+    df.ix[:,1:94].apply(Anscombe_Transform)
+    X = df.values.copy()
+    X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
+    #X = scaler.transform(X)
+    return X, ids
     
 def load_fold0_data(path):
     df = pd.read_csv(path)
@@ -44,13 +55,6 @@ def load_fold0_data(path):
     y = encoder.fit_transform(labels).astype(np.int32)
     return X, y, ids
     
-def load_test_data(path):
-    df = pd.read_csv(path)
-    df.ix[:,1:94].apply(Anscombe_Transform)
-    X = df.values.copy()
-    X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
-    return X, ids
-    
 def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
     y_prob = clf.predict_proba(X_test)
     submission = pd.read_csv('../data/sampleSubmission.csv')
@@ -61,11 +65,13 @@ def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
 
 # Train
 for i in range(1,31):
-    np.random.seed(9*i)
-    X, y, encoder = load_train_data('../../train.csv')
-    Test, ids = load_test_data('../../test.csv')
+    np.random.seed(9)
+    X, y, encoder, scaler = load_train_data('../../train.csv')
+    Test, ids = load_test_data('../../test.csv', scaler)
+    num_classes = len(encoder.classes_)
+    num_features = X.shape[1]    
     
-    X_train, y_train, encoder = load_train_data('../../train_fold0.csv')
+    X_train, y_train, encoder, scaler1 = load_train_data('../../train_fold0.csv')
     X_test, y_test, testIDS = load_fold0_data('../../test_fold0.csv')
     
     num_classes = len(encoder.classes_)
@@ -150,7 +156,7 @@ for i in range(1,31):
                                 EarlyStopping(patience=30)
                                 ],
                          
-                         eval_size=0.1,
+                         eval_size=0.2,
                          verbose=1,
                          max_epochs=200)
                          
@@ -165,5 +171,5 @@ for i in range(1,31):
             
         # Submission 
         net1.fit(X, y)
-        make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_'+str(j)+'_nnet2.csv')
+        make_submission(net1, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_'+str(j)+'_nnet2.csv')
             

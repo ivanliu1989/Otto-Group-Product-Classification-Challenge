@@ -18,24 +18,29 @@ from nolearn.lasagne import NeuralNet
 from adjust_variable import AdjustVariable
 from early_stopping import EarlyStopping
 
+def Anscombe_Transform(data):
+    #data = float(data)
+    data = (data + 0.375)**(0.5)
+    return data
+    
 def load_train_data(path):
     df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    df.ix[:,1:94].apply(Anscombe_Transform)
     X = df.values.copy()
     np.random.shuffle(X)
     X, labels = X[:, 1:-1].astype(np.float32), X[:, -1]
     encoder = LabelEncoder()
     y = encoder.fit_transform(labels).astype(np.int32)
     scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
-    X = scaler.fit_transform(X)
+    #X = scaler.fit_transform(X)
     return X, y, encoder, scaler
     
 def load_test_data(path, scaler):
     df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    df.ix[:,1:94].apply(Anscombe_Transform)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
-    X = scaler.transform(X)
+    #X = scaler.transform(X)
     return X, ids
     
 def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
@@ -87,16 +92,16 @@ net0 = NeuralNet(layers=layers0,
                  
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
-                        AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                        EarlyStopping(patience=20)
+                        AdjustVariable('update_momentum', start=0.85, stop=0.999),
+                        EarlyStopping(patience=30)
                         ],
                  
-                 eval_size=0.1,
+                 eval_size=0.2,
                  verbose=1,
-                 max_epochs=100)
+                 max_epochs=160)
                  
 net0.fit(X, y)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_rect_0.474885.csv')
-# 0.457593 71 39 58
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_at_0.455143.csv')
+# 0.457593 71 39 58 66

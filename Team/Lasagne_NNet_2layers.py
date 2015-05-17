@@ -20,32 +20,35 @@ from adjust_variable import AdjustVariable
 from early_stopping import EarlyStopping
 from sklearn.metrics import log_loss
 
-def load_train_data(path):
-    train = pd.read_csv(path)  
-    train.ix[:,1:94] = train.ix[:,1:94].apply(np.log1p)
-    train = train.values.copy()
-    np.random.shuffle(train)
-    ids, train, labels, folds = train[:, 0], train[:, 1:-2].astype(np.float32), train[:, -2], train[:, -1]
-    trainIDX = np.where(folds != 0)
-    testIDX = np.where(folds == 0)
-    X_train = train[trainIDX]
-    X_test = train[testIDX]
-    ids = ids[testIDX]
-    encoder = LabelEncoder()
-    labelsPP = encoder.fit_transform(labels)
-    y_train = labelsPP[trainIDX].astype(np.int32)
-    y_test = labelsPP[testIDX].astype(np.int32)
-    scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
-    return X_train, y_train, X_test, y_test, encoder, ids,scaler
+def Anscombe_Transform(data):
+    data = (data + 0.375)**(0.5)
+    return data
     
-def load_test_data(path, scaler):
+def load_train_data(path):
     df = pd.read_csv(path)
-    df.ix[:,1:94] = df.ix[:,1:94].apply(np.log1p)
+    df.ix[:,1:94].apply(Anscombe_Transform)
+    X = df.values.copy()
+    np.random.shuffle(X)
+    X, labels = X[:, 1:-1].astype(np.float32), X[:, -1]
+    encoder = LabelEncoder()
+    y = encoder.fit_transform(labels).astype(np.int32)
+    return X, y, encoder
+    
+def load_fold0_data(path):
+    df = pd.read_csv(path)
+    df.ix[:,1:94].apply(Anscombe_Transform)
+    X = df.values.copy()
+    np.random.shuffle(X)
+    X, labels, ids = X[:, 1:-1].astype(np.float32), X[:, -1],X[:, 0].astype(str)
+    encoder = LabelEncoder()
+    y = encoder.fit_transform(labels).astype(np.int32)
+    return X, y, ids
+    
+def load_test_data(path):
+    df = pd.read_csv(path)
+    df.ix[:,1:94].apply(Anscombe_Transform)
     X = df.values.copy()
     X, ids = X[:, 1:].astype(np.float32), X[:, 0].astype(str)
-    X = scaler.transform(X)
     return X, ids
     
 def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
@@ -56,28 +59,20 @@ def make_submission(clf, X_test, ids, encoder, name='lasagne_nnet.csv'):
     submission.to_csv(name)
     print("Wrote submission to file {}.".format(name))
 
-# Load Data    
-X_train, y_train, X_test, y_test, encoder, testIDS,scaler = load_train_data('../data/train_folds.csv')
-Test, ids = load_test_data('../../test.csv',scaler)
-num_classes = len(encoder.classes_)
-num_features = X_train.shape[1]
-
-#num_rows = X.shape[0]
-#Comb = np.append(X, X_test, axis=0)
-#pca = PCA()
-#scaler = StandardScaler(copy=True, with_mean=True, with_std=True)
-#Comb = scaler.fit_transform(Comb)
-#Comb = pca.fit_transform(Comb)
-#X = Comb[:num_rows,:]
-#X_test = Comb[num_rows:,:]
-
 # Train
 for i in range(1,31):
+    np.random.seed(9*i)
+    X, y, encoder = load_train_data('../../train.csv')
+    Test, ids = load_test_data('../../test.csv')
+    
+    X_train, y_train, encoder = load_train_data('../../train_fold0.csv')
+    X_test, y_test, testIDS = load_fold0_data('../../test_fold0.csv')
+    
+    num_classes = len(encoder.classes_)
+    num_features = X.shape[1]
     
     for j in range(1,6):
         
-        np.random.seed(9)
-    
         layers0 = [('input', InputLayer),
                    ('dropoutf', DropoutLayer),
                    ('dense0', DenseLayer),
@@ -110,14 +105,15 @@ for i in range(1,31):
                          
                          on_epoch_finished=[
                                 AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
-                                AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                                EarlyStopping(patience=20)
+                                AdjustVariable('update_momentum', start=0.85, stop=0.999),
+                                EarlyStopping(patience=30)
                                 ],
                          
-                         eval_size=0.1,
+                         eval_size=0.2,
                          verbose=1,
                          max_epochs=200)
         
+                
         layers1 = [('input', InputLayer),
                    ('dropoutf', DropoutLayer),
                    ('dense0', DenseLayer),
@@ -150,8 +146,8 @@ for i in range(1,31):
                          
                          on_epoch_finished=[
                                 AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
-                                AdjustVariable('update_momentum', start=0.9, stop=0.999),
-                                EarlyStopping(patience=20)
+                                AdjustVariable('update_momentum', start=0.85, stop=0.999),
+                                EarlyStopping(patience=30)
                                 ],
                          
                          eval_size=0.1,
@@ -171,18 +167,3 @@ for i in range(1,31):
         net1.fit(X, y)
         make_submission(net0, Test, ids, encoder, name='../../Team_nnet/Pred/testPred_Ivan_m'+str(i)+'_'+str(j)+'_nnet2.csv')
             
-        # 0.489205 200 0.5 150 0.5 100 0.01
-        # 0.480746 320 0.5 160 0.5 80 0.01
-        # 0.476469 726 0.5 243 0.5 81 0.01 (50)
-        # 0.472083 726 0.5 363 0.5 182 0.01 (47)
-        # 0.467849 726 0.5 243 0.5 81 0.01 (42)(adjustvariable, earlystopping) 
-        # 0.467454 726 0.5 243 0.5 81 0.01 (37)(adjustvariable, earlystopping)
-        
-        # 0.474071 0.15 1000 0.25 500 0.25 (46)
-        # 0.430886 0.15 1000 0.25 500 0.25 (44)
-        # 0.467751 0.15 1000 0.25 500 0.25 (28)
-        # 0.427678 0.15 800 0.25 500 0.25 300 0.25 (62)
-        # 0.423485 0.15 800 0.25 500 0.25 300 0.25 (65) rectify
-        
-        # Submission 
-        make_submission(net0, X_test, ids, encoder, name='../../NNET/nnet_2layers2_'+str(i)+'.csv')

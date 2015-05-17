@@ -133,5 +133,5 @@ net0.fit(X, y)
 # 0.427678 0.15 800 0.25 500 0.25 300 0.25 (62)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_pca_0.468144.csv')
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_pca_0.447091.csv')
 # .465721 33-37

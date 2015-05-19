@@ -5,4 +5,4 @@ For this competition, Otto Group has provided a dataset with 93 features for mor
 ![alt tag](https://kaggle2.blob.core.windows.net/competitions/kaggle/4280/media/Grafik.jpg)
 
 #### Model Results
-0.406 PUBLIC LB
+0.406 Public LB Score

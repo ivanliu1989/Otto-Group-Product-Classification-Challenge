@@ -26,9 +26,9 @@ head(ensem_prob)
 write.csv(ensem_prob,file='../ensemble_nnet.csv', quote=FALSE,row.names=FALSE)
 
 #######
-result1 <- data.frame(fread('../xgb_blending_32.csv',header = T, stringsAsFactor = F))
-result2 <- data.frame(fread('../submission_max_17.csv',header = T, stringsAsFactor = F))
+result1 <- data.frame(fread('../nnet41.csv',header = T, stringsAsFactor = F))
+result2 <- data.frame(fread('../submission_max_10.csv',header = T, stringsAsFactor = F))
 
 result <- result1
-result[,2:10] <- result1[,2:10]*0.3 + result2[,2:10]*0.7
-write.csv(result1,file='../xgb_blending_32.csv', quote=FALSE,row.names=FALSE)
+result[,2:10] <- result1[,2:10]*0.65 + result2[,2:10]*0.35
+write.csv(result,file='../final_sub.csv', quote=FALSE,row.names=FALSE)

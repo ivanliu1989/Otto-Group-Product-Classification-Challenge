@@ -9,7 +9,7 @@ from os.path import isfile, join
 import numpy as np
 import pandas as pd
 
-mypath='../../Emsemble/'
+mypath='../../nnet_blending/'
 onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 onlyfiles = onlyfiles[1:]
 
@@ -19,9 +19,9 @@ for i in range(0,len(onlyfiles)):
     else:        
         train = train + pd.read_csv(mypath+onlyfiles[i])
 
-#train = train/len(onlyfiles)
+train = train/len(onlyfiles)
 train.ix[:,0] = train.ix[:,0].astype(np.int)
-train.ix[:,0] = train.ix[:,0]/len(onlyfiles)
+#train.ix[:,0] = train.ix[:,0]/len(onlyfiles)
 train.to_csv('../../blending_'+str(len(onlyfiles))+'sum.csv', index=False)
 
 train = train.values.copy()

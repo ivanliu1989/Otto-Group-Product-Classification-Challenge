@@ -92,7 +92,7 @@ net0 = NeuralNet(layers=layers0,
                  
                  on_epoch_finished=[
                         AdjustVariable('update_learning_rate', start=0.015, stop=0.0001),
-                        AdjustVariable('update_momentum', start=0.85, stop=0.999),
+                        AdjustVariable('update_momentum', start=0.80, stop=0.999),
                         EarlyStopping(patience=30)
                         ],
                  
@@ -103,5 +103,5 @@ net0 = NeuralNet(layers=layers0,
 net0.fit(X, y)
 
 # Submission 
-make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_at_0.456369.csv')
+make_submission(net0, X_test, ids, encoder, name='../../lasagne_nnet_at_0.451275.csv')
 # 0.457593 71 39 58 66
